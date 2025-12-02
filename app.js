@@ -82,7 +82,9 @@ btnGenerar.addEventListener("click", async () => {
     10
   );
   const autor = document.getElementById("autor").value.trim();
+  const plantilla = document.getElementById("plantilla").value;
   const plan = planSelect.value || "basic";
+
 
   if (!tema || !publico || !objetivo || !capitulos || capitulos <= 0) {
     estadoEl.textContent =
@@ -98,15 +100,17 @@ btnGenerar.addEventListener("click", async () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        tema,
-        publico,
-        objetivo,
-        tipo,
-        profundidad,
-        capitulos,
-        autor,
-        plan
-      })
+  tema,
+  publico,
+  objetivo,
+  tipo,
+  profundidad,
+  capitulos,
+  autor,
+  plantilla,
+  plan
+})
+
     });
 
     if (!resp.ok) {
@@ -120,6 +124,23 @@ btnGenerar.addEventListener("click", async () => {
 
     estadoEl.textContent = "";
     ebookHtmlEl.innerHTML = data.html;
+    // Aplicar clase de plantilla al contenedor principal del ebook
+const page = ebookHtmlEl.querySelector(".ebook-page");
+if (page) {
+  page.classList.remove(
+    "template-minimal",
+    "template-business",
+    "template-creative"
+  );
+  if (plantilla === "minimal") {
+    page.classList.add("template-minimal");
+  } else if (plantilla === "business") {
+    page.classList.add("template-business");
+  } else if (plantilla === "creative") {
+    page.classList.add("template-creative");
+  }
+}
+
   } catch (err) {
     console.error(err);
     estadoEl.textContent =
