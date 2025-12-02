@@ -411,3 +411,121 @@ html.dark .panel-form select {
 .ebook-page strong {
   color: var(--gold-dark);
 }
+
+/* ===== PLANTILLAS VISUALES DEL EBOOK ===== */
+
+/* Base: ya existe .ebook-page, aquí solo variamos por plantilla */
+
+.ebook-page.template-minimal {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 18px 18px 22px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+}
+
+.ebook-page.template-minimal h1,
+.ebook-page.template-minimal h2,
+.ebook-page.template-minimal h3 {
+  color: #111827;
+}
+
+.ebook-page.template-minimal .author {
+  color: #6b7280;
+}
+
+/* Business Blue: corporativo */
+
+.ebook-page.template-business {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 18px 18px 22px;
+  border: 1px solid rgba(37, 99, 235, 0.4);
+}
+
+.ebook-page.template-business h1 {
+  color: #1d4ed8;
+}
+
+.ebook-page.template-business h2 {
+  color: #1e3a8a;
+}
+
+.ebook-page.template-business h3 {
+  color: #1f2937;
+}
+
+.ebook-page.template-business .author {
+  color: #1d4ed8;
+}
+
+/* Creativa Full Color */
+
+.ebook-page.template-creative {
+  background: radial-gradient(circle at top left, #fdf2ff, #eef2ff);
+  border-radius: 12px;
+  padding: 18px 18px 22px;
+  border: 1px solid rgba(236, 72, 153, 0.4);
+}
+
+.ebook-page.template-creative h1 {
+  color: #db2777;
+}
+
+.ebook-page.template-creative h2 {
+  color: #7c3aed;
+}
+
+.ebook-page.template-creative h3 {
+  color: #1f2937;
+}
+
+.ebook-page.template-creative .author {
+  color: #7c3aed;
+}
+
+/* ===== BLOQUES DESTACADOS ===== */
+
+.ebook-page .highlight-box,
+.ebook-page .tip-box,
+.ebook-page .exercise-box {
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 10px 0;
+  font-size: 13px;
+}
+
+/* Variantes por tipo de bloque */
+
+.ebook-page .highlight-box {
+  border-left: 3px solid var(--gold-dark);
+  background: rgba(248, 250, 252, 0.85);
+}
+
+html.dark .ebook-page .highlight-box {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.ebook-page .tip-box {
+  border-left: 3px solid #22c55e;
+  background: rgba(220, 252, 231, 0.9);
+}
+
+html.dark .ebook-page .tip-box {
+  background: rgba(5, 46, 22, 0.9);
+}
+
+.ebook-page .exercise-box {
+  border-left: 3px solid #3b82f6;
+  background: rgba(219, 234, 254, 0.9);
+}
+
+html.dark .ebook-page .exercise-box {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.ebook-page .highlight-box strong,
+.ebook-page .tip-box strong,
+.ebook-page .exercise-box strong {
+  color: var(--gold-dark);
+}
+
