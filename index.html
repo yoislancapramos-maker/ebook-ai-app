@@ -121,15 +121,23 @@
         />
 
         <label for="autor">Autor o marca (opcional)</label>
-        <input
-          id="autor"
-          type="text"
-          placeholder="Ej: Tu Marca Digital"
-        />
+<input
+  id="autor"
+  type="text"
+  placeholder="Ej: Tu Marca Digital"
+/>
 
-        <button id="btn-generar" class="primary-button full-width">
-          Generar ebook
-        </button>
+<label for="plantilla">Plantilla visual del ebook</label>
+<select id="plantilla">
+  <option value="minimal">Minimal Pro</option>
+  <option value="business">Business Blue</option>
+  <option value="creative">Creativa Full Color</option>
+</select>
+
+<button id="btn-generar" class="primary-button full-width">
+  Generar ebook
+</button>
+
 
         <p id="estado" class="status-text"></p>
       </section>
