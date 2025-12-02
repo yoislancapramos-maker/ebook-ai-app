@@ -7,6 +7,9 @@ const PRO_KEY = "PRO-2025";
 // Nombre para guardar sesión en localStorage
 const ACCESS_STORAGE_KEY = "golden_ebook_access";
 
+// Para recordar el último ebook generado (HTML)
+let lastEbookHtml = "";
+
 // ===== TEMA CLARO/OSCURO =====
 
 const themeToggleBtn = document.getElementById("theme-toggle");
@@ -70,6 +73,7 @@ const btnGenerar = document.getElementById("btn-generar");
 const estadoEl = document.getElementById("estado");
 const ebookHtmlEl = document.getElementById("ebook-html");
 const btnCopiar = document.getElementById("btn-copiar");
+const btnPdf = document.getElementById("btn-pdf");
 
 btnGenerar.addEventListener("click", async () => {
   const tema = document.getElementById("tema").value.trim();
@@ -124,6 +128,8 @@ btnGenerar.addEventListener("click", async () => {
 
     estadoEl.textContent = "";
     ebookHtmlEl.innerHTML = data.html;
+    lastEbookHtml = data.html; // <--- ESTA ES LA NUEVA LÍNEA
+
     // Aplicar clase de plantilla al contenedor principal del ebook
 const page = ebookHtmlEl.querySelector(".ebook-page");
 if (page) {
@@ -165,3 +171,65 @@ btnCopiar.addEventListener("click", async () => {
     setTimeout(() => (btnCopiar.textContent = "Copiar HTML"), 1600);
   }
 });
+
+// ===== DESCARGAR PDF A4 DESDE EL NAVEGADOR =====
+
+btnPdf.addEventListener("click", async () => {
+  // Verificar que haya contenido
+  const page = ebookHtmlEl.querySelector(".ebook-page");
+  if (!page) {
+    estadoEl.textContent = "Primero genera un ebook antes de descargar el PDF.";
+    return;
+  }
+
+  estadoEl.textContent = "Generando PDF, espera unos segundos...";
+
+  try {
+    const { jsPDF } = window.jspdf;
+
+    // Parámetros del PDF A4 vertical
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    // Usar html2canvas para representar el contenido completo
+    const canvas = await html2canvas(page, {
+      scale: 2, // más calidad
+      useCORS: true
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+    const imgWidth = pageWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    // Primera página
+    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    // Páginas siguientes (si el contenido es largo)
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    // Nombre de archivo
+    const temaInput = document.getElementById("tema").value.trim();
+    const fileName = temaInput
+      ? `ebook-${temaInput.substring(0, 40).replace(/[^a-z0-9]+/gi, "-")}.pdf`
+      : "ebook-generado.pdf";
+
+    pdf.save(fileName);
+
+    estadoEl.textContent = "PDF generado correctamente.";
+  } catch (err) {
+    console.error(err);
+    estadoEl.textContent =
+      "Hubo un error al generar el PDF. Intenta de nuevo.";
+  }
+});
+
