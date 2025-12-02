@@ -1,0 +1,413 @@
+/* 
+  Golden Crystal UI
+  Modo claro por defecto, modo oscuro con .dark en <html>
+*/
+
+/* Variables: modo CLARO (default) */
+:root {
+  --bg: #f9fafb;
+  --bg-elevated: rgba(255, 255, 255, 0.85);
+  --bg-glass: rgba(255, 255, 255, 0.75);
+  --border-soft: rgba(0, 0, 0, 0.08);
+  --text: #111827;
+  --text-muted: #6b7280;
+
+  --gold: #c5a253;
+  --gold-soft: #f6e7c1;
+  --gold-dark: #a97f2d;
+  --accent: #c5a253;
+
+  --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.18);
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --radius-sm: 999px;
+
+  --font-title: "Playfair Display", system-ui, serif;
+  --font-body: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+/* Variables: modo OSCURO */
+html.dark {
+  --bg: #050509;
+  --bg-elevated: rgba(17, 17, 25, 0.85);
+  --bg-glass: rgba(17, 17, 25, 0.9);
+  --border-soft: rgba(250, 250, 255, 0.17);
+  --text: #f9fafb;
+  --text-muted: #9ca3af;
+
+  --gold: #d4af37;
+  --gold-soft: #e8d4a2;
+  --gold-dark: #b8860b;
+  --accent: #d4af37;
+
+  --shadow-soft: 0 24px 60px rgba(0, 0, 0, 0.9);
+}
+
+/* Reset básico */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, rgba(212, 175, 55, 0.12), transparent),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Contenedor principal */
+
+.app-shell {
+  max-width: 1120px;
+  margin: 18px auto;
+  padding: 16px;
+}
+
+/* Topbar */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(14px);
+  margin-bottom: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 40%;
+  background: radial-gradient(circle at 30% 20%, #f6e7c1, #c5a253);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-glyph {
+  color: #111827;
+  font-size: 18px;
+}
+
+.brand-text h1 {
+  font-family: var(--font-title);
+  margin: 0;
+  font-size: 20px;
+}
+
+.brand-text p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon-button {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-soft);
+  background: transparent;
+  color: var(--text);
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* Tarjeta de acceso */
+
+.access-card {
+  margin-top: 14px;
+  margin-bottom: 14px;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+}
+
+.access-card h2 {
+  margin: 0 0 6px 0;
+  font-size: 18px;
+}
+
+.access-subtitle {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.access-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 720px) {
+  .access-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.access-field label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: var(--text-muted);
+}
+
+.access-field select,
+.access-field input {
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+}
+
+html.dark .access-field select,
+html.dark .access-field input {
+  background: rgba(5, 5, 9, 0.9);
+  color: var(--text);
+}
+
+.access-error {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #ef4444;
+}
+
+/* Botones */
+
+.primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: linear-gradient(135deg, var(--gold-soft), var(--gold));
+  color: #111827;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  box-shadow: 0 8px 18px rgba(212, 175, 55, 0.35);
+}
+
+.primary-button:hover {
+  filter: brightness(1.03);
+  transform: translateY(-0.5px);
+}
+
+.ghost-button {
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-soft);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.ghost-button:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Layout principal */
+
+.main {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.25fr);
+  gap: 14px;
+  margin-top: 6px;
+}
+
+@media (max-width: 960px) {
+  .main {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Paneles */
+
+.panel {
+  border-radius: var(--radius-lg);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+  padding: 16px 16px 18px;
+}
+
+.panel h2 {
+  margin: 0 0 6px 0;
+  font-size: 17px;
+}
+
+.panel-subtitle {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Formulario */
+
+.panel-form label {
+  display: block;
+  font-size: 13px;
+  margin-top: 8px;
+  margin-bottom: 4px;
+  color: var(--text-muted);
+}
+
+.panel-form input,
+.panel-form select {
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+}
+
+html.dark .panel-form input,
+html.dark .panel-form select {
+  background: rgba(5, 5, 9, 0.9);
+  color: var(--text);
+}
+
+.panel-form input:focus,
+.panel-form select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* Estado */
+
+.status-text {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Panel de vista previa */
+
+.panel-preview {
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.preview-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Contenedor de ebook */
+
+.ebook-preview {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-soft);
+  background: var(--bg-glass);
+  backdrop-filter: blur(10px);
+  padding: 12px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* Estilo interno del ebook */
+
+.ebook-page {
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.ebook-page h1 {
+  font-family: var(--font-title);
+  font-size: 24px;
+  margin: 0 0 4px 0;
+}
+
+.ebook-page .subtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.ebook-page .author {
+  font-size: 13px;
+  color: var(--gold-dark);
+  margin-bottom: 16px;
+}
+
+.ebook-page h2 {
+  font-size: 18px;
+  margin-top: 16px;
+  margin-bottom: 4px;
+}
+
+.ebook-page h3 {
+  font-size: 15px;
+  margin-top: 10px;
+  margin-bottom: 3px;
+}
+
+.ebook-page p {
+  margin-bottom: 6px;
+}
+
+.ebook-page ul,
+.ebook-page ol {
+  margin-left: 20px;
+  margin-bottom: 8px;
+}
+
+.ebook-page li {
+  margin-bottom: 3px;
+}
+
+.ebook-page strong {
+  color: var(--gold-dark);
+}
