@@ -144,18 +144,22 @@
 
       <section class="panel panel-preview">
         <div class="preview-header">
-          <div>
-            <h2>Vista previa</h2>
-            <p class="panel-subtitle">
-              Aquí verás el ebook completo generado en HTML listo para convertir a PDF.
-            </p>
-          </div>
-          <div class="preview-actions">
-            <button id="btn-copiar" class="ghost-button">
-              Copiar HTML
-            </button>
-          </div>
-        </div>
+  <div>
+    <h2>Vista previa</h2>
+    <p class="panel-subtitle">
+      Aquí verás el ebook completo generado en HTML listo para convertir a PDF.
+    </p>
+  </div>
+  <div class="preview-actions">
+    <button id="btn-copiar" class="ghost-button">
+      Copiar HTML
+    </button>
+    <button id="btn-pdf" class="primary-button">
+      Descargar PDF
+    </button>
+  </div>
+</div>
+
 
         <div id="ebook-html" class="ebook-preview">
           <div class="ebook-page">
@@ -166,6 +170,11 @@
     </main>
   </div>
 
+    <!-- Librerías para generar PDF en el navegador -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-/0wZ6fECszO2vCuxnxOQk4LLxSz5MMEZe7qVD/3GQXffNk31DJ7tY79DbDeihdj5Z8SGvtQvV4qDLqg8G3k7Wg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNa5lH26tE2GdZLkAMPx/+qvOB0fOkH1ZZ1xdjQbaO5jM90oCbGyF/F7fs/3Gzdh0dX8GkMb4oTi27CybSGwlA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
   <script src="app.js" defer></script>
 </body>
 </html>
+
