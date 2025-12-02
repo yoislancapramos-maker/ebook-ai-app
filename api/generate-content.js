@@ -13,6 +13,7 @@ export default async function handler(req, res) {
     profundidad,
     capitulos,
     autor,
+    plantilla,
     plan
   } = req.body || {};
 
@@ -23,24 +24,34 @@ export default async function handler(req, res) {
   const autorFinal =
     autor && autor.trim().length > 0 ? autor.trim() : "Autor Anónimo";
 
-  // Texto según profundidad
   const detalleMap = {
-    basico: "extensión clara y directa, 10-15 páginas aproximadas",
-    medio: "extensión media, con explicaciones, ejemplos y ejercicios, 20-30 páginas aproximadas",
-    alto: "extensión alta, muy detallada, con marcos conceptuales y ejemplos, 30-50 páginas aproximadas"
+    basico:
+      "extensión clara y directa, 10-15 páginas aproximadas en formato PDF, equivalente a un contenido moderado",
+    medio:
+      "extensión media, con explicaciones, ejemplos y ejercicios, 20-30 páginas aproximadas en formato PDF, equivalente a un contenido amplio",
+    alto:
+      "extensión alta, muy detallada, con marcos conceptuales, ejemplos, casos y ejercicios, 30-50 páginas aproximadas en formato PDF. El contenido debe ser extenso."
   };
 
   const tipoMap = {
     guia: "una guía paso a paso muy práctica",
     plan: "un plan detallado organizado por días o semanas",
     checklist: "una checklist accionable acompañada de consejos prácticos",
-    mixto: "una combinación de guía paso a paso, plan de días y checklist final"
+    mixto:
+      "una combinación de guía paso a paso, plan de días y checklist final accionable"
+  };
+
+  const plantillaMap = {
+    minimal: "Minimal Pro (limpia, profesional, muy legible)",
+    business: "Business Blue (corporativa, seria, ideal para negocios)",
+    creative: "Creativa Full Color (más llamativa y colorida, ideal para creatividad y redes sociales)"
   };
 
   const detalleTexto = detalleMap[profundidad] || detalleMap.medio;
   const tipoTexto = tipoMap[tipo] || tipoMap.guia;
+  const plantillaTexto = plantillaMap[plantilla] || plantillaMap.minimal;
 
-  // Elegir modelo: ambos planes tienen buena calidad, solo cambia internamente
+  // Ambos modelos dan buena calidad, solo cambiamos capacidad interna
   const model = plan === "pro" ? "gpt-4o" : "gpt-4o-mini";
 
   const prompt = `
@@ -54,6 +65,7 @@ Datos del ebook:
 - Nivel de detalle: ${detalleTexto}
 - Número aproximado de capítulos principales: ${capitulos}
 - Autor o marca: ${autorFinal}
+- Estilo visual (plantilla): ${plantillaTexto}
 
 Instrucciones de estilo:
 - Sé muy práctico: incluye pasos concretos, ejemplos aplicados al público objetivo y mini ejercicios.
@@ -61,6 +73,15 @@ Instrucciones de estilo:
 - No inventes estadísticas ni porcentajes falsos.
 - Usa un tono cercano pero profesional.
 - No hables de que eres una IA ni menciones modelos de lenguaje.
+- El contenido debe ser relativamente extenso y detallado; no resumas demasiado.
+
+Puedes usar estos bloques visuales cuando tenga sentido:
+- Para una idea muy importante, usa:
+  <div class="highlight-box"><strong>Título breve del bloque:</strong> Explicación práctica.</div>
+- Para consejos específicos, usa:
+  <div class="tip-box"><strong>Tip:</strong> Consejo práctico que el lector pueda aplicar.</div>
+- Para actividades y ejercicios, usa:
+  <div class="exercise-box"><strong>Ejercicio:</strong> Explica qué debe hacer el lector paso a paso.</div>
 
 Estructura obligatoria del ebook (EN HTML SENCILLO, SIN <html> NI <body>):
 
@@ -82,18 +103,20 @@ Estructura obligatoria del ebook (EN HTML SENCILLO, SIN <html> NI <body>):
 </ul>
 
 4) Capítulos:
-Para cada capítulo, respeta este esquema:
+Para cada capítulo, respeta este esquema y desarrolla de forma detallada:
 <h2>Capítulo X - Título del capítulo</h2>
 <p>Texto introductorio que conecta con la realidad del lector.</p>
 
 <h3>Conceptos clave</h3>
 <ul>
   <li>Concepto + explicación práctica orientada al público objetivo.</li>
+  <li>Otro concepto importante con ejemplo breve.</li>
 </ul>
 
 <h3>Pasos accionables</h3>
 <ol>
   <li>Paso concreto que el lector pueda aplicar.</li>
+  <li>Otro paso concreto que se pueda hacer en poco tiempo.</li>
 </ol>
 
 <h3>Ejemplo aplicado</h3>
@@ -104,6 +127,8 @@ Para cada capítulo, respeta este esquema:
   <li>Ejercicio o pregunta que el lector pueda hacer hoy mismo para avanzar.</li>
 </ul>
 
+Cuando tenga sentido, añade uno o varios bloques usando las clases highlight-box, tip-box o exercise-box para destacar ideas clave, tips o ejercicios adicionales.
+
 5) Conclusión:
 <h2>Conclusión</h2>
 <p>Resumen de ideas clave, recordatorio del objetivo y mensaje final motivador.</p>
@@ -112,19 +137,22 @@ Para cada capítulo, respeta este esquema:
 <h2>Bonus: Checklist o plan accionable</h2>
 <ul>
   <li>Punto accionable concreto, breve y claro.</li>
+  <li>Otro punto accionable que el lector pueda aplicar de inmediato.</li>
 </ul>
 
 REGLAS IMPORTANTES:
 - Devuelve SOLO el contenido interno como si ya estuviera dentro de <div class="ebook-page">...</div>, pero NO añadas esa etiqueta, yo la envolveré después.
-- Usa solo etiquetas HTML básicas: h1, h2, h3, p, ul, ol, li, strong, em.
+- Usa solo etiquetas HTML básicas: h1, h2, h3, p, ul, ol, li, strong, em, y los div con clases highlight-box, tip-box, exercise-box.
 - No incluyas CSS, ni scripts, ni estilos en línea.
-- Asegúrate de que el contenido sea útil, coherente y sin relleno innecesario.
+- Asegúrate de que el contenido sea útil, coherente, práctico y con suficiente extensión.
 `;
 
   try {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      return res.status(500).json({ error: "No está configurada la API KEY de OpenAI" });
+      return res
+        .status(500)
+        .json({ error: "No está configurada la API KEY de OpenAI" });
     }
 
     const openaiRes = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -144,7 +172,7 @@ REGLAS IMPORTANTES:
           { role: "user", content: prompt }
         ],
         temperature: 0.7,
-        max_tokens: 3500
+        max_tokens: 4000
       })
     });
 
