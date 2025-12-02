@@ -529,3 +529,190 @@ html.dark .ebook-page .exercise-box {
   color: var(--gold-dark);
 }
 
+/* ================================
+   AISLAR LA VISTA DEL EBOOK
+================================ */
+.ebook-preview-area,
+.ebook-preview-area * {
+  color: inherit !important;
+}
+
+.ebook-page {
+  background: #fff;
+  padding: 40px 45px;
+  border-radius: 16px;
+  max-width: 750px;
+  margin: 0 auto;
+  font-family: "Inter", sans-serif;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.10);
+  border: 1px solid rgba(0,0,0,0.08);
+
+  /* Siempre modo claro */
+  color: #1b1b1b !important;
+}
+
+html.dark .ebook-page {
+  background: #ffffff; 
+  color: #1b1b1b !important; 
+}
+
+/* ================================
+   PLANTILLA MINIMAL PRO
+================================ */
+.template-minimal {
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.10);
+}
+
+.template-minimal h1 {
+  font-family: "Playfair Display", serif;
+  font-size: 42px;
+  margin-bottom: 8px;
+}
+
+.template-minimal .subtitle {
+  font-size: 18px;
+  color: #444;
+  margin-bottom: 25px;
+}
+
+.template-minimal .author {
+  font-size: 14px;
+  margin-bottom: 40px;
+  color: #666;
+}
+
+.template-minimal h2 {
+  font-size: 28px;
+  margin-top: 40px;
+  border-bottom: 2px solid #000;
+  padding-bottom: 6px;
+}
+
+.template-minimal h3 {
+  font-size: 20px;
+  margin-top: 25px;
+}
+
+/*Separadores sutiles*/
+.template-minimal hr {
+  border: none;
+  border-top: 1px solid rgba(0,0,0,0.15);
+  margin: 25px 0;
+}
+
+/* ================================
+   PLANTILLA BUSINESS BLUE
+================================ */
+.template-business {
+  background: linear-gradient(to bottom right, #ffffff, #f1f5ff);
+  border-left: 6px solid #1e40af;
+}
+
+.template-business h1 {
+  color: #1e3a8a;
+  font-size: 40px;
+  font-weight: 800;
+}
+
+.template-business .subtitle {
+  color: #3b82f6;
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 25px;
+}
+
+.template-business .author {
+  color: #1e40af;
+  margin-bottom: 35px;
+}
+
+.template-business h2 {
+  color: #1d4ed8;
+  font-size: 26px;
+  margin-top: 40px;
+  border-left: 4px solid #1d4ed8;
+  padding-left: 10px;
+}
+
+.template-business h3 {
+  color: #2563eb;
+  font-size: 20px;
+}
+
+/* Bloques corporativos */
+.template-business .highlight-box {
+  background: rgba(59,130,246,0.10);
+  border-left: 5px solid #2563eb;
+}
+
+/* ================================
+   PLANTILLA CREATIVA FULL COLOR
+================================ */
+.template-creative {
+  background: linear-gradient(135deg, #fff0f6, #f0f7ff, #fefce8);
+  border: 2px solid rgba(255,0,130,0.25);
+  padding: 45px;
+  position: relative; /* ← ESTA ES LA INSTRUCCIÓN IMPORTANTE */
+}
+
+.template-creative h1 {
+  font-family: "Poppins", sans-serif;
+  font-size: 46px;
+  background: linear-gradient(90deg, #d946ef, #6366f1, #0ea5e9);
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: 800;
+}
+
+.template-creative .subtitle {
+  color: #db2777;
+  font-size: 20px;
+  margin-bottom: 25px;
+}
+
+.template-creative .author {
+  color: #7c3aed;
+  margin-bottom: 40px;
+}
+
+.template-creative h2 {
+  color: #d946ef;
+  font-size: 30px;
+  margin-top: 40px;
+}
+
+.template-creative h3 {
+  color: #6366f1;
+  font-size: 22px;
+}
+
+/* Efectos decorativos */
+.template-creative::before {
+  content: "";
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  background: rgba(236,72,153,0.25);
+  top: -20px;
+  right: -20px;
+  border-radius: 50%;
+  filter: blur(10px);
+}
+
+.template-creative::after {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  background: rgba(59,130,246,0.25);
+  bottom: -30px;
+  left: -30px;
+  border-radius: 50%;
+  filter: blur(18px);
+}
+
+
+
+
+
