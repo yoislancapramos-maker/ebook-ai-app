@@ -209,9 +209,17 @@ if (btnPdf) {
       const { jsPDF } = window.jspdf;
 
       // Parámetros del PDF A4 vertical
-      const pdf = new jsPDF("p", "mm", "a4");
+      const pdf = new jsPDF({
+  orientation: "p",
+  unit: "mm",
+  format: "a4",
+  compress: true
+});
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 12; // margen seguro para KDP
+      const usableWidth = pageWidth - margin * 2;
+
 
       // Usar html2canvas para representar el contenido completo
       // ===== Generar canvas del ebook =====
@@ -237,23 +245,27 @@ ctx.drawImage(canvas, 0, 0);
 // Comprimir a JPG de alta calidad
 const imgData = croppedCanvas.toDataURL("image/jpeg", 0.78);
 
-const imgWidth = pageWidth;
+const imgWidth = usableWidth;
 const imgHeight = (croppedCanvas.height * imgWidth) / croppedCanvas.width;
 
+// Altura equivalente a una página en pixeles (con márgenes)
+const pageHeightPx = (pageHeight - margin * 2) * (croppedCanvas.width / imgWidth);
+
 let heightLeft = imgHeight;
-let position = 0;
+let position = margin;
 
-const pageHeightPx = (pageHeight * croppedCanvas.width) / pageWidth;
+// Primera página
+pdf.addImage(imgData, "JPEG", margin, position, imgWidth, imgHeight, undefined, "FAST");
+heightLeft -= pageHeightPx;
 
+// Páginas siguientes
 while (heightLeft > 0) {
-  pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight, undefined, "FAST");
+  pdf.addPage();
+  position = margin - (imgHeight - heightLeft);
+  pdf.addImage(imgData, "JPEG", margin, position, imgWidth, imgHeight, undefined, "FAST");
   heightLeft -= pageHeightPx;
-  position -= pageHeightPx;
-
-  if (heightLeft > -50) {
-    pdf.addPage();
-  }
 }
+
 
 
 
