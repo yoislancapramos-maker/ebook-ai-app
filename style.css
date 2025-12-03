@@ -417,9 +417,9 @@ html.dark .panel-form select {
 /* UNA SOLA DEFINICIÓN DE PÁGINA REAL */
 .ebook-page {
   background: #ffffff;
-  border-radius: 18px;
+  border-radius: 14px;
   padding: 28px 32px;
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.12);
   border: 1px solid rgba(0, 0, 0, 0.05);
 
   width: 100%;
