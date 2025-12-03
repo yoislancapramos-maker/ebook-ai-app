@@ -3,10 +3,13 @@
   Modo claro por defecto, modo oscuro con .dark en <html>
 */
 
-/* Variables: modo CLARO (default) */
+/* ============================
+   VARIABLES MODO CLARO
+============================ */
+
 :root {
   --bg: #f9fafb;
-  --bg-elevated: rgba(255, 255, 255, 0.85);
+  --bg-elevated: rgba(255, 255, 255, 0.9);
   --bg-glass: rgba(255, 255, 255, 0.75);
   --border-soft: rgba(0, 0, 0, 0.08);
   --text: #111827;
@@ -27,12 +30,15 @@
     sans-serif;
 }
 
-/* Variables: modo OSCURO */
+/* ============================
+   VARIABLES MODO OSCURO
+============================ */
+
 html.dark {
   --bg: #050509;
-  --bg-elevated: rgba(17, 17, 25, 0.85);
-  --bg-glass: rgba(17, 17, 25, 0.9);
-  --border-soft: rgba(250, 250, 255, 0.17);
+  --bg-elevated: rgba(17, 17, 25, 0.9);
+  --bg-glass: rgba(17, 17, 25, 0.85);
+  --border-soft: rgba(250, 250, 255, 0.18);
   --text: #f9fafb;
   --text-muted: #9ca3af;
 
@@ -44,7 +50,9 @@ html.dark {
   --shadow-soft: 0 24px 60px rgba(0, 0, 0, 0.9);
 }
 
-/* Reset básico */
+/* ============================
+   RESET BÁSICO
+============================ */
 
 *,
 *::before,
@@ -60,14 +68,16 @@ body {
 
 body {
   min-height: 100vh;
-  background: radial-gradient(circle at top, rgba(212, 175, 55, 0.12), transparent),
+  background: radial-gradient(circle at top, rgba(212, 175, 55, 0.16), transparent),
     var(--bg);
   color: var(--text);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
 }
 
-/* Contenedor principal */
+/* ============================
+   CONTENEDOR PRINCIPAL
+============================ */
 
 .app-shell {
   max-width: 1120px;
@@ -75,7 +85,9 @@ body {
   padding: 16px;
 }
 
-/* Topbar */
+/* ============================
+   TOPBAR
+============================ */
 
 .topbar {
   display: flex;
@@ -140,7 +152,9 @@ body {
   font-size: 16px;
 }
 
-/* Tarjeta de acceso */
+/* ============================
+   TARJETA DE ACCESO
+============================ */
 
 .access-card {
   margin-top: 14px;
@@ -205,7 +219,9 @@ html.dark .access-field input {
   color: #ef4444;
 }
 
-/* Botones */
+/* ============================
+   BOTONES
+============================ */
 
 .primary-button {
   display: inline-flex;
@@ -246,7 +262,37 @@ html.dark .access-field input {
   width: 100%;
 }
 
-/* Layout principal */
+/* BOTÓN CAMBIAR PLAN — DORADO REAL */
+
+.gold-button-outline {
+  background: transparent;
+  border: 1px solid #d4af37;
+  color: #d4af37;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gold-button-outline:hover {
+  background: #d4af37;
+  color: #000000;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+}
+
+.small-button {
+  font-size: 13px !important;
+  padding: 6px 12px !important;
+}
+
+/* ============================
+   LAYOUT PRINCIPAL
+============================ */
 
 .main {
   display: grid;
@@ -261,7 +307,9 @@ html.dark .access-field input {
   }
 }
 
-/* Paneles */
+/* ============================
+   PANELES
+============================ */
 
 .panel {
   border-radius: var(--radius-lg);
@@ -322,7 +370,9 @@ html.dark .panel-form select {
   color: var(--text-muted);
 }
 
-/* Panel de vista previa */
+/* ============================
+   PANEL VISTA PREVIA
+============================ */
 
 .panel-preview {
   display: flex;
@@ -343,8 +393,6 @@ html.dark .panel-form select {
   gap: 8px;
 }
 
-/* Contenedor de ebook */
-
 .ebook-preview {
   border-radius: var(--radius-md);
   border: 1px solid var(--border-soft);
@@ -355,141 +403,168 @@ html.dark .panel-form select {
   overflow-y: auto;
 }
 
-/* Estilo interno del ebook */
+/* ============================
+   SISTEMA DE PÁGINAS
+============================ */
 
-.ebook-page {
-  width: 100%;
-  max-width: 750px;
-  min-height: 1000px;
-  padding: 40px 50px;
-  margin: 20px auto;
-  background: #ffffff;
-  border-radius: 14px;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.12);
-  border: 1px solid rgba(0,0,0,0.05);
+.pages-container {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding-bottom: 40px;
 }
 
+/* UNA SOLA DEFINICIÓN DE PÁGINA REAL */
+.ebook-page {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 40px 46px;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+
+  width: 100%;
+  max-width: 780px;
+  min-height: 1080px; /* tamaño tipo A4 en pantalla */
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Asegurar que el contenido no se salga */
+.ebook-page * {
+  max-width: 100%;
+  box-sizing: border-box;
+  break-inside: avoid;
+}
+
+/* ============================
+   TIPOGRAFÍA INTERNA DEL EBOOK
+============================ */
 
 .ebook-page h1 {
   font-family: var(--font-title);
-  font-size: 24px;
-  margin: 0 0 4px 0;
+  font-size: 32px;
+  margin: 0 0 8px 0;
 }
 
 .ebook-page .subtitle {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-muted);
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 
 .ebook-page .author {
   font-size: 13px;
   color: var(--gold-dark);
-  margin-bottom: 16px;
+  margin-bottom: 22px;
 }
 
 .ebook-page h2 {
+  font-size: 22px;
+  margin-top: 26px;
+  margin-bottom: 6px;
+}
+
+.ebook-page h3 {
   font-size: 18px;
   margin-top: 16px;
   margin-bottom: 4px;
 }
 
-.ebook-page h3 {
-  font-size: 15px;
-  margin-top: 10px;
-  margin-bottom: 3px;
-}
-
 .ebook-page p {
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  line-height: 1.7;
+  font-size: 14px;
 }
 
 .ebook-page ul,
 .ebook-page ol {
   margin-left: 20px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .ebook-page li {
-  margin-bottom: 3px;
+  margin-bottom: 4px;
+  font-size: 14px;
 }
 
 .ebook-page strong {
   color: var(--gold-dark);
 }
 
-/* ===== PLANTILLAS VISUALES DEL EBOOK ===== */
+/* ============================
+   PLANTILLAS VISUALES
+============================ */
 
-/* Base: ya existe .ebook-page, aquí solo variamos por plantilla */
+/* MINIMAL PRO */
 
 .ebook-page.template-minimal {
   background: #ffffff;
-  border-radius: 12px;
-  padding: 18px 18px 22px;
-  border: 1px solid rgba(148, 163, 184, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.16);
 }
 
-.ebook-page.template-minimal h1,
-.ebook-page.template-minimal h2,
-.ebook-page.template-minimal h3 {
-  color: #111827;
+.ebook-page.template-minimal h1 {
+  font-size: 34px;
 }
 
-.ebook-page.template-minimal .author {
-  color: #6b7280;
+.ebook-page.template-minimal h2 {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.16);
+  padding-bottom: 4px;
 }
 
-/* Business Blue: corporativo */
+/* BUSINESS BLUE */
 
 .ebook-page.template-business {
-  background: #f9fafb;
-  border-radius: 12px;
-  padding: 18px 18px 22px;
-  border: 1px solid rgba(37, 99, 235, 0.4);
+  background: linear-gradient(to bottom right, #ffffff, #f1f5ff);
+  border-left: 6px solid #1e40af;
+  box-shadow: 0 14px 32px rgba(59, 130, 246, 0.2);
 }
 
 .ebook-page.template-business h1 {
-  color: #1d4ed8;
+  color: #1e3a8a;
+  font-size: 32px;
+  font-weight: 800;
 }
 
 .ebook-page.template-business h2 {
-  color: #1e3a8a;
-}
-
-.ebook-page.template-business h3 {
-  color: #1f2937;
-}
-
-.ebook-page.template-business .author {
   color: #1d4ed8;
 }
 
-/* Creativa Full Color */
+.ebook-page.template-business h3 {
+  color: #2563eb;
+}
+
+.ebook-page.template-business .author {
+  color: #1e40af;
+}
+
+/* CREATIVA FULL COLOR */
 
 .ebook-page.template-creative {
-  background: radial-gradient(circle at top left, #fdf2ff, #eef2ff);
-  border-radius: 12px;
-  padding: 18px 18px 22px;
-  border: 1px solid rgba(236, 72, 153, 0.4);
+  background: linear-gradient(135deg, #fff0f6, #f0f7ff, #fefce8);
+  border: 2px solid rgba(255, 0, 130, 0.25);
+  box-shadow: 0 16px 38px rgba(244, 63, 94, 0.3);
 }
 
 .ebook-page.template-creative h1 {
+  font-size: 34px;
+  background: linear-gradient(90deg, #d946ef, #6366f1, #0ea5e9);
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: 800;
+}
+
+.ebook-page.template-creative .subtitle {
   color: #db2777;
-}
-
-.ebook-page.template-creative h2 {
-  color: #7c3aed;
-}
-
-.ebook-page.template-creative h3 {
-  color: #1f2937;
 }
 
 .ebook-page.template-creative .author {
   color: #7c3aed;
 }
 
-/* ===== BLOQUES DESTACADOS ===== */
+/* ============================
+   BLOQUES ESPECIALES
+============================ */
 
 .ebook-page .highlight-box,
 .ebook-page .tip-box,
@@ -500,308 +575,22 @@ html.dark .panel-form select {
   font-size: 13px;
 }
 
-/* Variantes por tipo de bloque */
-
+/* Idea clave */
 .ebook-page .highlight-box {
   border-left: 3px solid var(--gold-dark);
-  background: rgba(248, 250, 252, 0.85);
+  background: rgba(248, 250, 252, 0.9);
 }
 
-html.dark .ebook-page .highlight-box {
-  background: rgba(15, 23, 42, 0.9);
-}
-
+/* Tip práctico */
 .ebook-page .tip-box {
   border-left: 3px solid #22c55e;
   background: rgba(220, 252, 231, 0.9);
 }
 
-html.dark .ebook-page .tip-box {
-  background: rgba(5, 46, 22, 0.9);
-}
-
+/* Ejercicio */
 .ebook-page .exercise-box {
   border-left: 3px solid #3b82f6;
   background: rgba(219, 234, 254, 0.9);
 }
-
-html.dark .ebook-page .exercise-box {
-  background: rgba(15, 23, 42, 0.9);
-}
-
-.ebook-page .highlight-box strong,
-.ebook-page .tip-box strong,
-.ebook-page .exercise-box strong {
-  color: var(--gold-dark);
-}
-
-/* ================================
-   AISLAR LA VISTA DEL EBOOK
-================================ */
-.ebook-preview-area,
-.ebook-preview-area * {
-  color: inherit !important;
-}
-
-.ebook-page {
-  background: #fff;
-  padding: 40px 45px;
-  border-radius: 16px;
-  max-width: 750px;
-  margin: 0 auto;
-  font-family: "Inter", sans-serif;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.10);
-  border: 1px solid rgba(0,0,0,0.08);
-
-  /* Siempre modo claro */
-  color: #1b1b1b !important;
-}
-
-html.dark .ebook-page {
-  background: #ffffff; 
-  color: #1b1b1b !important; 
-}
-
-/* ================================
-   PLANTILLA MINIMAL PRO
-================================ */
-.template-minimal {
-  background: #ffffff;
-  border: 1px solid rgba(0,0,0,0.10);
-}
-
-.template-minimal h1 {
-  font-family: "Playfair Display", serif;
-  font-size: 42px;
-  margin-bottom: 8px;
-}
-
-.template-minimal .subtitle {
-  font-size: 18px;
-  color: #444;
-  margin-bottom: 25px;
-}
-
-.template-minimal .author {
-  font-size: 14px;
-  margin-bottom: 40px;
-  color: #666;
-}
-
-.template-minimal h2 {
-  font-size: 28px;
-  margin-top: 40px;
-  border-bottom: 2px solid #000;
-  padding-bottom: 6px;
-}
-
-.template-minimal h3 {
-  font-size: 20px;
-  margin-top: 25px;
-}
-
-/*Separadores sutiles*/
-.template-minimal hr {
-  border: none;
-  border-top: 1px solid rgba(0,0,0,0.15);
-  margin: 25px 0;
-}
-
-/* ================================
-   PLANTILLA BUSINESS BLUE
-================================ */
-.template-business {
-  background: linear-gradient(to bottom right, #ffffff, #f1f5ff);
-  border-left: 6px solid #1e40af;
-}
-
-.template-business h1 {
-  color: #1e3a8a;
-  font-size: 40px;
-  font-weight: 800;
-}
-
-.template-business .subtitle {
-  color: #3b82f6;
-  font-size: 18px;
-  font-weight: 500;
-  margin-bottom: 25px;
-}
-
-.template-business .author {
-  color: #1e40af;
-  margin-bottom: 35px;
-}
-
-.template-business h2 {
-  color: #1d4ed8;
-  font-size: 26px;
-  margin-top: 40px;
-  border-left: 4px solid #1d4ed8;
-  padding-left: 10px;
-}
-
-.template-business h3 {
-  color: #2563eb;
-  font-size: 20px;
-}
-
-/* Bloques corporativos */
-.template-business .highlight-box {
-  background: rgba(59,130,246,0.10);
-  border-left: 5px solid #2563eb;
-}
-
-/* ================================
-   PLANTILLA CREATIVA FULL COLOR
-================================ */
-.template-creative {
-  background: linear-gradient(135deg, #fff0f6, #f0f7ff, #fefce8);
-  border: 2px solid rgba(255,0,130,0.25);
-  padding: 45px;
-  position: relative; /* ← ESTA ES LA INSTRUCCIÓN IMPORTANTE */
-}
-
-.template-creative h1 {
-  font-family: "Poppins", sans-serif;
-  font-size: 46px;
-  background: linear-gradient(90deg, #d946ef, #6366f1, #0ea5e9);
-  -webkit-background-clip: text;
-  color: transparent;
-  font-weight: 800;
-}
-
-.template-creative .subtitle {
-  color: #db2777;
-  font-size: 20px;
-  margin-bottom: 25px;
-}
-
-.template-creative .author {
-  color: #7c3aed;
-  margin-bottom: 40px;
-}
-
-.template-creative h2 {
-  color: #d946ef;
-  font-size: 30px;
-  margin-top: 40px;
-}
-
-.template-creative h3 {
-  color: #6366f1;
-  font-size: 22px;
-}
-
-/* Efectos decorativos */
-.template-creative::before {
-  content: "";
-  position: absolute;
-  width: 120px;
-  height: 120px;
-  background: rgba(236,72,153,0.25);
-  top: -20px;
-  right: -20px;
-  border-radius: 50%;
-  filter: blur(10px);
-}
-
-.template-creative::after {
-  content: "";
-  position: absolute;
-  width: 180px;
-  height: 180px;
-  background: rgba(59,130,246,0.25);
-  bottom: -30px;
-  left: -30px;
-  border-radius: 50%;
-  filter: blur(18px);
-}
-
-/* Versión pequeña */
-.small-button {
-  font-size: 13px !important;
-  padding: 5px 10px !important;
-}
-
-/* BOTÓN CAMBIAR PLAN — DORADO REAL */
-.gold-button-outline {
-  background: transparent;
-  border: 1px solid #d4af37;    /* oro */
-  color: #d4af37;
-  padding: 7px 14px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* HOVER EN MODO CLARO Y OSCURO */
-.gold-button-outline:hover {
-  background: #d4af37;      /* fondo dorado */
-  color: #000000;           /* texto negro para contraste */
-  box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
-}
-
-/* Tamaño reducido */
-.small-button {
-  font-size: 13px !important;
-  padding: 6px 12px !important;
-}
-
-/* Evitar cortes bruscos al exportar PDF */
-.ebook-page * {
-  break-inside: avoid;
-}
-
-/* ================================
-   SISTEMA DE PÁGINAS - ESTILO LIBRO
-================================ */
-
-.pages-container {
-  display: flex;
-  flex-direction: column;
-  gap: 22px; /* separación entre páginas */
-  padding-bottom: 40px;
-}
-
-.ebook-page {
-  background: white;
-  border-radius: 18px;
-  padding: 40px 46px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-
-  /* límite visual de página real */
-  width: 100%;
-  max-width: 780px;
-  min-height: 1080px;  /* tamaño aproximado A4 */
-  margin: 0 auto;
-  position: relative;
-}
-
-/* efecto de borde decorativo según plantilla */
-.ebook-page.template-creative {
-  box-shadow: 0 14px 38px rgba(244, 63, 94, 0.25);
-}
-
-.ebook-page.template-business {
-  box-shadow: 0 14px 38px rgba(59, 130, 246, 0.25);
-}
-
-.ebook-page.template-minimal {
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.18);
-}
-
-/* Esto asegura que texto, listas y bloques nunca se salgan */
-.ebook-page * {
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
 
 
