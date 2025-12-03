@@ -752,4 +752,50 @@ html.dark .ebook-page {
   break-inside: avoid;
 }
 
+/* ================================
+   SISTEMA DE PÁGINAS - ESTILO LIBRO
+================================ */
+
+.pages-container {
+  display: flex;
+  flex-direction: column;
+  gap: 22px; /* separación entre páginas */
+  padding-bottom: 40px;
+}
+
+.ebook-page {
+  background: white;
+  border-radius: 18px;
+  padding: 40px 46px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+
+  /* límite visual de página real */
+  width: 100%;
+  max-width: 780px;
+  min-height: 1080px;  /* tamaño aproximado A4 */
+  margin: 0 auto;
+  position: relative;
+}
+
+/* efecto de borde decorativo según plantilla */
+.ebook-page.template-creative {
+  box-shadow: 0 14px 38px rgba(244, 63, 94, 0.25);
+}
+
+.ebook-page.template-business {
+  box-shadow: 0 14px 38px rgba(59, 130, 246, 0.25);
+}
+
+.ebook-page.template-minimal {
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.18);
+}
+
+/* Esto asegura que texto, listas y bloques nunca se salgan */
+.ebook-page * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+
 
