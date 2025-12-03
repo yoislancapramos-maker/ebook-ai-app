@@ -220,11 +220,13 @@ const canvas = await html2canvas(page, {
   useCORS: true,
   backgroundColor: "#ffffff",
   windowWidth: page.scrollWidth,
-  windowHeight: page.scrollHeight
+  windowHeight: page.scrollHeight,
+  imageTimeout: 0,
+  removeContainer: true
 });
 
 // ===== Recortar espacio vacío inferior =====
-const cropHeight = canvas.height - 40; // recorte leve del final
+const cropHeight = canvas.height - 40;
 const croppedCanvas = document.createElement("canvas");
 croppedCanvas.width = canvas.width;
 croppedCanvas.height = cropHeight;
@@ -232,8 +234,8 @@ croppedCanvas.height = cropHeight;
 const ctx = croppedCanvas.getContext("2d");
 ctx.drawImage(canvas, 0, 0);
 
-// Ahora usamos esta imagen recortada
-const imgData = croppedCanvas.toDataURL("image/png");
+// Comprimir a JPG de alta calidad
+const imgData = croppedCanvas.toDataURL("image/jpeg", 0.78);
 
 const imgWidth = pageWidth;
 const imgHeight = (croppedCanvas.height * imgWidth) / croppedCanvas.width;
@@ -244,14 +246,15 @@ let position = 0;
 const pageHeightPx = (pageHeight * croppedCanvas.width) / pageWidth;
 
 while (heightLeft > 0) {
-  pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+  pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight, undefined, "FAST");
   heightLeft -= pageHeightPx;
   position -= pageHeightPx;
 
-  if (heightLeft > -50) { // evita páginas en blanco
+  if (heightLeft > -50) {
     pdf.addPage();
   }
 }
+
 
 
       // Nombre del archivo
