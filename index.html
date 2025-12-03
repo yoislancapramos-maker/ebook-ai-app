@@ -5,7 +5,7 @@
   <title>AI Golden Ebook Studio</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Tipografías Google (opcional pero recomendado) -->
+  <!-- Tipografías -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -15,8 +15,11 @@
 
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <div class="app-shell">
+
+    <!-- Barra superior -->
     <header class="topbar">
       <div class="brand">
         <div class="brand-mark">
@@ -28,34 +31,31 @@
         </div>
       </div>
 
-     <div class="topbar-actions">
+      <div class="topbar-actions">
 
-  <!-- Botón Cambiar Plan -->
-  <button id="change-plan" class="gold-button-outline small-button">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="1 4 1 10 7 10"></polyline>
-    <polyline points="23 20 23 14 17 14"></polyline>
-    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10"></path>
-    <path d="M3.51 15A9 9 0 0 0 18.36 18.36L23 14"></path>
-  </svg>
-  Cambiar plan
-</button>
+        <!-- Botón Cambiar Plan -->
+        <button id="change-plan" class="gold-button-outline small-button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+           stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <polyline points="23 20 23 14 17 14"></polyline>
+            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10"></path>
+            <path d="M3.51 15A9 9 0 0 0 18.36 18.36L23 14"></path>
+          </svg>
+          Cambiar plan
+        </button>
 
-  <!-- Botón Tema -->
-  <button id="theme-toggle" class="icon-button" aria-label="Cambiar tema">
-    🌙
-  </button>
-
-</div>
-
+        <!-- Botón Tema -->
+        <button id="theme-toggle" class="icon-button" aria-label="Cambiar tema">
+          🌙
+        </button>
+      </div>
     </header>
 
-    <!-- Acceso por contraseña simple -->
+    <!-- ACCESO -->
     <section class="access-card" id="access-card">
       <h2>Acceso para suscriptores</h2>
-      <p class="access-subtitle">
-        Introduce la clave que recibiste en tu compra de Hotmart.
-      </p>
+      <p class="access-subtitle">Introduce la clave que recibiste en Hotmart.</p>
 
       <div class="access-grid">
         <div class="access-field">
@@ -68,139 +68,101 @@
 
         <div class="access-field">
           <label for="access-key">Clave de acceso</label>
-          <input
-            id="access-key"
-            type="password"
-            placeholder="Ej: BASICO-2025 o PRO-2025"
-          />
+          <input id="access-key" type="password" placeholder="Ej: BASICO-2025 o PRO-2025" />
         </div>
       </div>
 
-      <button id="access-submit" class="primary-button">
-        Entrar al generador
-      </button>
+      <button id="access-submit" class="primary-button">Entrar al generador</button>
       <p id="access-error" class="access-error"></p>
     </section>
 
-    <!-- Contenido principal de la app -->
+    <!-- APP -->
     <main class="main" id="main-app" hidden>
+      <!-- Formulario -->
       <section class="panel panel-form">
         <h2>Configurar ebook</h2>
-        <p class="panel-subtitle">
-          Define a quién ayudas, con qué tema y qué resultado quieres que logre el lector.
-        </p>
+        <p class="panel-subtitle">Ingresa los datos necesarios y genera tu ebook.</p>
 
-        <label for="tema">Tema principal del ebook</label>
-        <input
-          id="tema"
-          type="text"
-          placeholder="Ej: Cómo organizar tus finanzas personales"
-        />
+        <label for="tema">Tema del ebook</label>
+        <input id="tema" type="text" placeholder="Ej: Cómo organizar tus finanzas" />
 
         <label for="publico">Público objetivo</label>
-        <input
-          id="publico"
-          type="text"
-          placeholder="Ej: adultos de 25 a 45 años con deudas"
-        />
+        <input id="publico" type="text" placeholder="Ej: personas con deudas" />
 
         <label for="objetivo">Objetivo del ebook</label>
-        <input
-          id="objetivo"
-          type="text"
-          placeholder="Ej: ayudarles a salir de deudas en 90 días"
-        />
+        <input id="objetivo" type="text" placeholder="Ej: lograr libertad financiera" />
 
         <label for="tipo">Tipo de ebook</label>
         <select id="tipo">
           <option value="guia">Guía paso a paso</option>
           <option value="plan">Plan de X días</option>
           <option value="checklist">Checklist + consejos</option>
-          <option value="mixto">Mixto (guía + plan + checklist)</option>
+          <option value="mixto">Mixto</option>
         </select>
 
         <label for="profundidad">Nivel de profundidad</label>
         <select id="profundidad">
-          <option value="basico">Básico (10–15 páginas estimadas)</option>
-          <option value="medio">Medio (20–30 páginas estimadas)</option>
-          <option value="alto">Alto (30–50 páginas estimadas)</option>
+          <option value="basico">Básico</option>
+          <option value="medio">Medio</option>
+          <option value="alto">Alto</option>
         </select>
 
-        <label for="capitulos">Número aproximado de capítulos</label>
-        <input
-          id="capitulos"
-          type="number"
-          min="4"
-          max="15"
-          value="7"
-        />
+        <label for="capitulos">Número de capítulos</label>
+        <input id="capitulos" type="number" min="4" max="15" value="7" />
 
-        <label for="autor">Autor o marca (opcional)</label>
-<input
-  id="autor"
-  type="text"
-  placeholder="Ej: Tu Marca Digital"
-/>
+        <label for="autor">Autor o marca</label>
+        <input id="autor" type="text" placeholder="Ej: Tu Marca Digital" />
 
-<label for="plantilla">Plantilla visual del ebook</label>
-<select id="plantilla">
-  <option value="minimal">Minimal Pro</option>
-  <option value="business">Business Blue</option>
-  <option value="creative">Creativa Full Color</option>
-</select>
+        <label for="plantilla">Plantilla visual</label>
+        <select id="plantilla">
+          <option value="minimal">Minimal Pro</option>
+          <option value="business">Business Blue</option>
+          <option value="creative">Creativa Full Color</option>
+        </select>
 
-<!-- NUEVO: selector de formato de PDF -->
-<label for="pdf-size">Formato del PDF</label>
-<select id="pdf-size">
-  <option value="a4">A4 (recomendado)</option>
-  <option value="letter">Carta / Letter</option>
-  <option value="kdp6x9">6 x 9 pulgadas (KDP)</option>
-</select>
+        <label for="pdf-size">Formato PDF</label>
+        <select id="pdf-size">
+          <option value="a4">A4 (recomendado)</option>
+          <option value="letter">Carta</option>
+          <option value="kdp6x9">6x9 pulgadas (KDP)</option>
+        </select>
 
-<button id="btn-generar" class="primary-button full-width">
-  Generar ebook
-</button>
-
-
-
+        <button id="btn-generar" class="primary-button full-width">Generar ebook</button>
         <p id="estado" class="status-text"></p>
       </section>
 
+      <!-- Vista previa -->
       <section class="panel panel-preview">
         <div class="preview-header">
-  <div>
-    <h2>Vista previa</h2>
-    <p class="panel-subtitle">
-  Vista previa de tu ebook. Puedes exportarlo a PDF con un clic.
-</p>
- </div>
-  <div class="preview-actions">
-    <button id="btn-copiar" class="ghost-button">
-      Copiar HTML
-    </button>
-    <button id="btn-pdf" class="primary-button">
-      Descargar PDF
-    </button>
-  </div>
-</div>
+          <div>
+            <h2>Vista previa del ebook</h2>
+            <p class="panel-subtitle">Aquí verás las páginas reales antes de exportar a PDF.</p>
+          </div>
 
+          <div class="preview-actions">
+            <button id="btn-copiar" class="ghost-button">Copiar HTML</button>
+            <button id="btn-pdf" class="primary-button">Descargar PDF</button>
+          </div>
+        </div>
 
         <div id="ebook-html" class="ebook-preview pages-container">
-            <div class="ebook-page">
-            <p>Configura el ebook y haz clic en <strong>Generar ebook</strong> para ver el contenido aquí.</p>
+          <div class="ebook-page">
+            <p>Configura los datos y genera tu ebook.</p>
           </div>
         </div>
       </section>
     </main>
+
   </div>
 
- <!-- Librerías para generar PDF en el navegador (SIN SRI para evitar bloqueo) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <!-- Librerías PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-<!-- Tu aplicación JS -->
-<script src="app.js" defer></script>
+  <!-- App -->
+  <script src="app.js" defer></script>
 </body>
 </html>
+
 
 
