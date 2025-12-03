@@ -418,13 +418,13 @@ html.dark .panel-form select {
 .ebook-page {
   background: #ffffff;
   border-radius: 18px;
-  padding: 40px 46px;
+  padding: 28px 32px;
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.16);
   border: 1px solid rgba(0, 0, 0, 0.05);
 
   width: 100%;
   max-width: 780px;
-  min-height: 1080px; /* tamaño tipo A4 en pantalla */
+  min-height: 900px; /* tamaño tipo A4 en pantalla */
   margin: 0 auto;
   position: relative;
 }
