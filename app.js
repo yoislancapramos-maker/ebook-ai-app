@@ -25,12 +25,32 @@ themeToggleBtn.addEventListener("click", () => {
 
 // ===== ACCESO POR CONTRASEÑA =====
 
+// ===== ACCESO POR CONTRASEÑA =====
+
 const accessCard = document.getElementById("access-card");
 const mainApp = document.getElementById("main-app");
 const planSelect = document.getElementById("plan");
 const accessInput = document.getElementById("access-key");
 const accessBtn = document.getElementById("access-submit");
 const accessError = document.getElementById("access-error");
+
+// ===== CAMBIAR PLAN =====
+
+const changePlanBtn = document.getElementById("change-plan");
+
+changePlanBtn.addEventListener("click", () => {
+  // Borrar la sesión
+  localStorage.removeItem("golden_ebook_access");
+
+  // Mostrar pantalla de suscripción
+  accessCard.hidden = false;
+  mainApp.hidden = true;
+
+  // Reset visual
+  accessInput.value = "";
+  accessError.textContent = "";
+});
+
 
 // Si ya está validado en esta máquina, saltar acceso
 const savedAccess = localStorage.getItem(ACCESS_STORAGE_KEY);
