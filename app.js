@@ -148,7 +148,62 @@ btnGenerar.addEventListener("click", async () => {
 
     estadoEl.textContent = "";
     ebookHtmlEl.innerHTML = data.html;
-    lastEbookHtml = data.html; // <--- ESTA ES LA NUEVA LÍNEA
+    lastEbookHtml = data.html; // 
+
+   // =========================================
+// SISTEMA DE PAGINADO REAL (CORREGIDO)
+// =========================================
+
+// Tomar HTML generado
+const rawContent = ebookHtmlEl.innerHTML;
+
+// Contenedor temporal
+const tempDiv = document.createElement("div");
+tempDiv.innerHTML = rawContent;
+
+// Eliminar vista previa anterior y preparar contenedor
+ebookHtmlEl.innerHTML = "";
+
+// Crear primera página
+let currentPage = createNewPage();
+
+// Función para crear páginas con la plantilla aplicada
+function createNewPage() {
+  const page = document.createElement("div");
+  page.classList.add("ebook-page");
+
+  // Aplicar plantilla visual
+  if (plantilla === "minimal") page.classList.add("template-minimal");
+  if (plantilla === "business") page.classList.add("template-business");
+  if (plantilla === "creative") page.classList.add("template-creative");
+
+  ebookHtmlEl.appendChild(page);
+  return page;
+}
+
+// Insertar elementos uno por uno
+const nodes = Array.from(tempDiv.childNodes);
+
+nodes.forEach(node => {
+  const clone = node.cloneNode(true);
+
+  // Regla 1 → Nuevo capítulo inicia página
+  if (clone.tagName === "H2" && currentPage.childNodes.length > 0) {
+    currentPage = createNewPage();
+  }
+
+  currentPage.appendChild(clone);
+
+  // Regla 2 → Si la página se desborda → dividir
+  if (currentPage.scrollHeight > 1300) {
+    const lastChild = currentPage.lastChild;
+    currentPage.removeChild(lastChild);
+
+    currentPage = createNewPage();
+    currentPage.appendChild(lastChild);
+  }
+});
+
 
     // Aplicar clase de plantilla al contenedor principal del ebook
 const page = ebookHtmlEl.querySelector(".ebook-page");
