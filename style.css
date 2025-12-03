@@ -747,3 +747,9 @@ html.dark .ebook-page {
   padding: 6px 12px !important;
 }
 
+/* Evitar cortes bruscos al exportar PDF */
+.ebook-page * {
+  break-inside: avoid;
+}
+
+
