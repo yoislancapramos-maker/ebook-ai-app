@@ -147,50 +147,46 @@ btnGenerar.addEventListener("click", async () => {
       SISTEMA DE PAGINADO REAL
 ============================ */
 
-function paginarEbook(plantilla) {
-  const container = document.getElementById("ebook-html");
-  const raw = container.innerHTML;
+function paginarEbook() {
+  const ebookHtmlEl = document.getElementById("ebook-html");
+  const rawContent = ebookHtmlEl.innerHTML;
 
-  // contenedor temporal
+  // Contenedor temporal
   const temp = document.createElement("div");
-  temp.innerHTML = raw;
+  temp.innerHTML = rawContent;
 
-  container.innerHTML = "";
+  ebookHtmlEl.innerHTML = "";
 
+  const MAX_HEIGHT = 1050; // altura realista de una página visual
+
+  let currentPage = crearPagina();
   let pages = [];
-  let currentPage = createPage();
 
-  function createPage() {
+  function crearPagina() {
     const page = document.createElement("div");
     page.classList.add("ebook-page");
-
-    if (plantilla === "minimal") page.classList.add("template-minimal");
-    if (plantilla === "business") page.classList.add("template-business");
-    if (plantilla === "creative") page.classList.add("template-creative");
-
-    container.appendChild(page);
+    ebookHtmlEl.appendChild(page);
     return page;
   }
 
-  const nodes = Array.from(temp.childNodes);
+  const elementos = Array.from(temp.childNodes);
 
-  nodes.forEach(node => {
-    const clone = node.cloneNode(true);
+  elementos.forEach(el => {
+    const clone = el.cloneNode(true);
 
-    // Inicio de capítulo
+    // Regla: si viene un H2 → nueva página
     if (clone.tagName === "H2" && currentPage.childNodes.length > 0) {
-      currentPage = createPage();
+      currentPage = crearPagina();
     }
 
     currentPage.appendChild(clone);
 
-    // Si se desborda, mover último elemento a nueva página
-    if (currentPage.scrollHeight > 1380) {
-      const last = currentPage.lastChild;
-      currentPage.removeChild(last);
+    // Regla de desborde
+    if (currentPage.scrollHeight > MAX_HEIGHT) {
+      currentPage.removeChild(clone);
 
-      currentPage = createPage();
-      currentPage.appendChild(last);
+      currentPage = crearPagina();
+      currentPage.appendChild(clone);
     }
   });
 }
