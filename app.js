@@ -192,8 +192,8 @@ btnCopiar.addEventListener("click", async () => {
   }
 });
 
-// ===== DESCARGAR PDF A4 DESDE EL NAVEGADOR =====
 
+ // ===== DESCARGAR PDF (A4 / CARTA / 6x9) DESDE EL NAVEGADOR =====
 if (btnPdf) {
   btnPdf.addEventListener("click", async () => {
     // Verificar que haya contenido
@@ -208,80 +208,125 @@ if (btnPdf) {
     try {
       const { jsPDF } = window.jspdf;
 
-      // Parámetros del PDF A4 vertical
-      const pdf = new jsPDF({
-  orientation: "p",
-  unit: "mm",
-  format: "a4",
-  compress: true
-});
+      // Leer formato elegido por el usuario
+      const pdfSizeSelect = document.getElementById("pdf-size");
+      const pdfSize = pdfSizeSelect ? pdfSizeSelect.value : "a4";
+
+      // Crear instancia según el formato
+      let pdf;
+      if (pdfSize === "letter") {
+        pdf = new jsPDF({
+          orientation: "p",
+          unit: "mm",
+          format: "letter",
+          compress: true
+        });
+      } else if (pdfSize === "kdp6x9") {
+        pdf = new jsPDF({
+          orientation: "p",
+          unit: "mm",
+          format: [152, 229], // 6 x 9 pulgadas
+          compress: true
+        });
+      } else {
+        pdf = new jsPDF({
+          orientation: "p",
+          unit: "mm",
+          format: "a4",
+          compress: true
+        });
+      }
+
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 12; // margen seguro para KDP
+      const margin = 12;
       const usableWidth = pageWidth - margin * 2;
 
-
-      // Usar html2canvas para representar el contenido completo
       // ===== Generar canvas del ebook =====
-const canvas = await html2canvas(page, {
-  scale: 3,
-  useCORS: true,
-  backgroundColor: "#ffffff",
-  windowWidth: page.scrollWidth,
-  windowHeight: page.scrollHeight,
-  imageTimeout: 0,
-  removeContainer: true
-});
+      const canvas = await html2canvas(page, {
+        scale: 3,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        windowWidth: page.scrollWidth,
+        windowHeight: page.scrollHeight,
+        imageTimeout: 0,
+        removeContainer: true
+      });
 
-// ===== Recortar espacio vacío inferior =====
-const cropHeight = canvas.height - 40;
-const croppedCanvas = document.createElement("canvas");
-croppedCanvas.width = canvas.width;
-croppedCanvas.height = cropHeight;
+      // ===== Recortar espacio vacío inferior =====
+      const cropHeight = canvas.height - 40;
+      const croppedCanvas = document.createElement("canvas");
+      croppedCanvas.width = canvas.width;
+      croppedCanvas.height = cropHeight;
 
-const ctx = croppedCanvas.getContext("2d");
-ctx.drawImage(canvas, 0, 0);
+      const ctx = croppedCanvas.getContext("2d");
+      ctx.drawImage(canvas, 0, 0);
 
-// Comprimir a JPG de alta calidad
-const imgData = croppedCanvas.toDataURL("image/jpeg", 0.78);
+      // Convertir a JPG para menos peso
+      const imgData = croppedCanvas.toDataURL("image/jpeg", 0.78);
 
-const imgWidth = usableWidth;
-const imgHeight = (croppedCanvas.height * imgWidth) / croppedCanvas.width;
+      const imgWidth = usableWidth;
+      const imgHeight = (croppedCanvas.height * imgWidth) / croppedCanvas.width;
 
-// Altura equivalente a una página en pixeles (con márgenes)
-const pageHeightPx = (pageHeight - margin * 2) * (croppedCanvas.width / imgWidth);
+      // Altura de una página en px
+      const pageHeightPx =
+        (pageHeight - margin * 2) *
+        (croppedCanvas.width / imgWidth);
 
-let heightLeft = imgHeight;
-let position = margin;
+      let heightLeft = imgHeight;
+      let position = margin;
 
-// Primera página
-pdf.addImage(imgData, "JPEG", margin, position, imgWidth, imgHeight, undefined, "FAST");
-heightLeft -= pageHeightPx;
+      // Primera página
+      pdf.addImage(
+        imgData,
+        "JPEG",
+        margin,
+        position,
+        imgWidth,
+        imgHeight,
+        undefined,
+        "FAST"
+      );
 
-// Páginas siguientes
-while (heightLeft > 0) {
-  pdf.addPage();
-  position = margin - (imgHeight - heightLeft);
-  pdf.addImage(imgData, "JPEG", margin, position, imgWidth, imgHeight, undefined, "FAST");
-  heightLeft -= pageHeightPx;
-}
+      heightLeft -= pageHeightPx;
 
-
-
+      // Páginas siguientes
+      while (heightLeft > 0) {
+        pdf.addPage();
+        position = margin - (imgHeight - heightLeft);
+        pdf.addImage(
+          imgData,
+          "JPEG",
+          margin,
+          position,
+          imgWidth,
+          imgHeight,
+          undefined,
+          "FAST"
+        );
+        heightLeft -= pageHeightPx;
+      }
 
       // Nombre del archivo
       const temaInput = document.getElementById("tema").value.trim();
-      const fileName = temaInput
-        ? `ebook-${temaInput.substring(0, 40).replace(/[^a-z0-9]+/gi, "-")}.pdf`
-        : "ebook-generado.pdf";
+      const baseName = temaInput
+        ? `ebook-${temaInput.substring(0, 40).replace(/[^a-z0-9]+/gi, "-")}`
+        : "ebook-generado";
 
-      pdf.save(fileName);
+      let suffix = "";
+      if (pdfSize === "letter") suffix = "-carta";
+      else if (pdfSize === "kdp6x9") suffix = "-6x9";
+      else suffix = "-a4";
+
+      pdf.save(`${baseName}${suffix}.pdf`);
 
       estadoEl.textContent = "PDF generado correctamente.";
     } catch (err) {
       console.error(err);
-      estadoEl.textContent = "Hubo un error al generar el PDF. Intenta de nuevo.";
+      estadoEl.textContent =
+        "Hubo un error al generar el PDF. Intenta de nuevo.";
     }
   });
-}
+} // 
+
 
