@@ -226,20 +226,19 @@ if (btnPdf) {
       const imgWidth = pageWidth;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-      let heightLeft = imgHeight;
-      let position = 0;
+     let heightLeft = imgHeight;
+let position = 0;
+const pageHeightPx = (pageHeight * canvas.width) / pageWidth;
 
-      // Primera página
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+while (heightLeft > 0) {
+  pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+  heightLeft -= pageHeightPx;
+  position -= pageHeightPx;
 
-      // Páginas siguientes
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
+  if (heightLeft > -50) { // evita páginas en blanco
+    pdf.addPage();
+  }
+}
 
       // Nombre del archivo
       const temaInput = document.getElementById("tema").value.trim();
