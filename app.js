@@ -215,9 +215,12 @@ if (btnPdf) {
 
       // Usar html2canvas para representar el contenido completo
       const canvas = await html2canvas(page, {
-        scale: 2,
-        useCORS: true
-      });
+  scale: 3,    // ← más nítido
+  useCORS: true,
+  windowWidth: page.scrollWidth,
+  windowHeight: page.scrollHeight
+});
+
 
       const imgData = canvas.toDataURL("image/png");
       const imgWidth = pageWidth;
