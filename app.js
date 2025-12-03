@@ -214,21 +214,34 @@ if (btnPdf) {
       const pageHeight = pdf.internal.pageSize.getHeight();
 
       // Usar html2canvas para representar el contenido completo
-      const canvas = await html2canvas(page, {
-  scale: 3,    // ← más nítido
+      // ===== Generar canvas del ebook =====
+const canvas = await html2canvas(page, {
+  scale: 3,
   useCORS: true,
+  backgroundColor: "#ffffff",
   windowWidth: page.scrollWidth,
   windowHeight: page.scrollHeight
 });
 
+// ===== Recortar espacio vacío inferior =====
+const cropHeight = canvas.height - 40; // recorte leve del final
+const croppedCanvas = document.createElement("canvas");
+croppedCanvas.width = canvas.width;
+croppedCanvas.height = cropHeight;
 
-      const imgData = canvas.toDataURL("image/png");
-      const imgWidth = pageWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+const ctx = croppedCanvas.getContext("2d");
+ctx.drawImage(canvas, 0, 0);
 
-     let heightLeft = imgHeight;
+// Ahora usamos esta imagen recortada
+const imgData = croppedCanvas.toDataURL("image/png");
+
+const imgWidth = pageWidth;
+const imgHeight = (croppedCanvas.height * imgWidth) / croppedCanvas.width;
+
+let heightLeft = imgHeight;
 let position = 0;
-const pageHeightPx = (pageHeight * canvas.width) / pageWidth;
+
+const pageHeightPx = (pageHeight * croppedCanvas.width) / pageWidth;
 
 while (heightLeft > 0) {
   pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
@@ -239,6 +252,7 @@ while (heightLeft > 0) {
     pdf.addPage();
   }
 }
+
 
       // Nombre del archivo
       const temaInput = document.getElementById("tema").value.trim();
