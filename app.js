@@ -193,67 +193,50 @@ btnCopiar.addEventListener("click", async () => {
 });
 
 
- // ===== DESCARGAR PDF (A4 / CARTA / 6x9) DESDE EL NAVEGADOR =====
+// ===== DESCARGAR PDF (A4 / CARTA / 6x9) =====
 if (btnPdf) {
   btnPdf.addEventListener("click", async () => {
-    // Verificar que haya contenido
     const page = ebookHtmlEl.querySelector(".ebook-page");
     if (!page) {
       estadoEl.textContent = "Primero genera un ebook antes de descargar el PDF.";
       return;
     }
 
-    estadoEl.textContent = "Generando PDF, espera unos segundos...";
+    estadoEl.textContent = "Generando PDF, espera...";
 
     try {
       const { jsPDF } = window.jspdf;
 
-      // Leer formato elegido por el usuario
-      const pdfSizeSelect = document.getElementById("pdf-size");
-      const pdfSize = pdfSizeSelect ? pdfSizeSelect.value : "a4";
+      // LEER FORMATO
+      const format = document.getElementById("pdf-size").value || "a4";
 
-      // Crear instancia según el formato
-      let pdf;
-      if (pdfSize === "letter") {
-        pdf = new jsPDF({
-          orientation: "p",
-          unit: "mm",
-          format: "letter",
-          compress: true
-        });
-      } else if (pdfSize === "kdp6x9") {
-        pdf = new jsPDF({
-          orientation: "p",
-          unit: "mm",
-          format: [152, 229], // 6 x 9 pulgadas
-          compress: true
-        });
-      } else {
-        pdf = new jsPDF({
-          orientation: "p",
-          unit: "mm",
-          format: "a4",
-          compress: true
-        });
-      }
+      let pdfOptions;
+      if (format === "letter") pdfOptions = { unit: "mm", format: "letter" };
+      else if (format === "kdp6x9") pdfOptions = { unit: "mm", format: [152, 229] };
+      else pdfOptions = { unit: "mm", format: "a4" };
 
+      const pdf = new jsPDF({
+        orientation: "p",
+        compress: true,
+        ...pdfOptions
+      });
+
+      // MEDIDAS DEL PDF
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       const margin = 12;
       const usableWidth = pageWidth - margin * 2;
 
-      // ===== Generar canvas del ebook =====
+      // ===== GENERAR CANVAS =====
       const canvas = await html2canvas(page, {
         scale: 3,
-        useCORS: true,
         backgroundColor: "#ffffff",
+        useCORS: true,
         windowWidth: page.scrollWidth,
-        windowHeight: page.scrollHeight,
-        imageTimeout: 0,
-        removeContainer: true
+        windowHeight: page.scrollHeight
       });
 
-      // ===== Recortar espacio vacío inferior =====
+      // ===== RECORTE DE ESPACIO INFERIOR =====
       const cropHeight = canvas.height - 40;
       const croppedCanvas = document.createElement("canvas");
       croppedCanvas.width = canvas.width;
@@ -262,71 +245,47 @@ if (btnPdf) {
       const ctx = croppedCanvas.getContext("2d");
       ctx.drawImage(canvas, 0, 0);
 
-      // Convertir a JPG para menos peso
-      const imgData = croppedCanvas.toDataURL("image/jpeg", 0.78);
+      // ===== CONVERTIR A IMAGEN =====
+      const imgData = croppedCanvas.toDataURL("image/jpeg", 0.80);
 
+      // ESCALADO REAL SEGÚN FORMATO DEL PDF
       const imgWidth = usableWidth;
       const imgHeight = (croppedCanvas.height * imgWidth) / croppedCanvas.width;
 
-      // Altura de una página en px
+      // ALTURA REAL DE UNA PÁGINA EN PIXELES
       const pageHeightPx =
-        (pageHeight - margin * 2) *
-        (croppedCanvas.width / imgWidth);
+        (pageHeight - margin * 2) * (croppedCanvas.width / imgWidth);
 
       let heightLeft = imgHeight;
       let position = margin;
 
-      // Primera página
-      pdf.addImage(
-        imgData,
-        "JPEG",
-        margin,
-        position,
-        imgWidth,
-        imgHeight,
-        undefined,
-        "FAST"
-      );
-
+      // PRIMERA PÁGINA
+      pdf.addImage(imgData, "JPEG", margin, position, imgWidth, imgHeight);
       heightLeft -= pageHeightPx;
 
-      // Páginas siguientes
+      // RESTO DE PÁGINAS
       while (heightLeft > 0) {
         pdf.addPage();
         position = margin - (imgHeight - heightLeft);
-        pdf.addImage(
-          imgData,
-          "JPEG",
-          margin,
-          position,
-          imgWidth,
-          imgHeight,
-          undefined,
-          "FAST"
-        );
+        pdf.addImage(imgData, "JPEG", margin, position, imgWidth, imgHeight);
         heightLeft -= pageHeightPx;
       }
 
-      // Nombre del archivo
-      const temaInput = document.getElementById("tema").value.trim();
-      const baseName = temaInput
-        ? `ebook-${temaInput.substring(0, 40).replace(/[^a-z0-9]+/gi, "-")}`
-        : "ebook-generado";
+      // NOMBRE FINAL
+      const tema = document.getElementById("tema").value.trim();
+      const base = tema ? tema.replace(/\s+/g, "-").toLowerCase() : "ebook";
 
-      let suffix = "";
-      if (pdfSize === "letter") suffix = "-carta";
-      else if (pdfSize === "kdp6x9") suffix = "-6x9";
-      else suffix = "-a4";
+      let suffix =
+        format === "letter" ? "-carta" :
+        format === "kdp6x9" ? "-6x9" : "-a4";
 
-      pdf.save(`${baseName}${suffix}.pdf`);
+      pdf.save(`${base}${suffix}.pdf`);
 
       estadoEl.textContent = "PDF generado correctamente.";
-    } catch (err) {
-      console.error(err);
-      estadoEl.textContent =
-        "Hubo un error al generar el PDF. Intenta de nuevo.";
+
+    } catch (error) {
+      console.error(error);
+      estadoEl.textContent = "Error al generar el PDF.";
     }
   });
-} // 
-
-
+}
