@@ -211,83 +211,59 @@ btnCopiar.addEventListener("click", async () => {
   }
 });
 
-/* ============================
-    GENERAR PDF — A4 / Carta / 6x9
-============================ */
+// =========================
+// EXPORTAR PDF CORRECTO
+// =========================
 
 btnPdf.addEventListener("click", async () => {
-  const page = ebookHtmlEl.querySelector(".ebook-page");
-  if (!page) {
-    estadoEl.textContent = "Genera un ebook primero.";
+  const pages = Array.from(document.querySelectorAll(".ebook-page"));
+
+  if (!pages.length) {
+    estadoEl.textContent = "Genera un ebook antes de exportar.";
     return;
   }
 
-  estadoEl.textContent = "Generando PDF...";
+  estadoEl.textContent = "Generando PDF, espera...";
 
-  try {
-    const { jsPDF } = window.jspdf;
+  const { jsPDF } = window.jspdf;
 
-    const size = document.getElementById("pdf-size").value;
+  // FORMATO PDF
+  const format = document.getElementById("pdf-size").value || "a4";
+  let pdfOpt;
 
-    let format;
-    if (size === "letter") format = "letter";
-    else if (size === "kdp6x9") format = [152, 229];
-    else format = "a4";
+  if (format === "letter") pdfOpt = { unit: "mm", format: "letter" };
+  else if (format === "kdp6x9") pdfOpt = { unit: "mm", format: [152, 229] };
+  else pdfOpt = { unit: "mm", format: "a4" };
 
-    const pdf = new jsPDF({
-      unit: "mm",
-      format,
-      orientation: "p",
-      compress: true
-    });
+  const pdf = new jsPDF({ orientation: "p", ...pdfOpt });
 
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const margin = 12;
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 12;
+  const usableWidth = pageWidth - margin * 2;
 
-    const canvas = await html2canvas(page, {
+  let first = true;
+
+  for (let p of pages) {
+    // Render page to canvas
+    const canvas = await html2canvas(p, {
       scale: 3,
-      useCORS: true,
-      backgroundColor: "#ffffff"
+      backgroundColor: "#ffffff",
+      useCORS: true
     });
 
-    const cropHeight = canvas.height - 40;
-    const cut = document.createElement("canvas");
-    cut.width = canvas.width;
-    cut.height = cropHeight;
-    cut.getContext("2d").drawImage(canvas, 0, 0);
-
-    const imgData = cut.toDataURL("image/jpeg", 0.8);
-
-    const usableWidth = pageWidth - margin * 2;
+    const imgData = canvas.toDataURL("image/jpeg", 0.85);
     const imgWidth = usableWidth;
-    const imgHeight = (cut.height * imgWidth) / cut.width;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    const pageHeightPx =
-      (pageHeight - margin * 2) * (cut.width / imgWidth);
+    if (!first) pdf.addPage();
+    first = false;
 
-    let heightLeft = imgHeight;
-    let position = margin;
-
-    pdf.addImage(imgData, "JPEG", margin, position, imgWidth, imgHeight);
-    heightLeft -= pageHeightPx;
-
-    while (heightLeft > 0) {
-      pdf.addPage();
-      position = margin - (imgHeight - heightLeft);
-      pdf.addImage(imgData, "JPEG", margin, position, imgWidth, imgHeight);
-      heightLeft -= pageHeightPx;
-    }
-
-    const tema = document.getElementById("tema").value.trim();
-    let name = tema ? tema.replace(/\s+/g, "-").toLowerCase() : "ebook";
-
-    pdf.save(`${name}-${size}.pdf`);
-
-    estadoEl.textContent = "PDF generado con éxito.";
-
-  } catch (err) {
-    console.error(err);
-    estadoEl.textContent = "Error al generar PDF.";
+    pdf.addImage(imgData, "JPEG", margin, margin, imgWidth, imgHeight);
   }
+
+  const tema = document.getElementById("tema").value.trim() || "ebook";
+  pdf.save(`${tema.replace(/\s+/g, "-").toLowerCase()}.pdf`);
+
+  estadoEl.textContent = "PDF generado correctamente.";
 });
