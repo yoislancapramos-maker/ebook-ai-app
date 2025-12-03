@@ -712,23 +712,6 @@ html.dark .ebook-page {
   filter: blur(18px);
 }
 
-/* Botón Cambiar Plan */
-#change-plan {
-  background: transparent;
-  border: 1px solid var(--gold-strong);
-  color: var(--gold-strong);
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.25s ease;
-}
-
-#change-plan:hover {
-  background: var(--gold-strong);
-  color: #000;
-}
-
 /* Versión pequeña */
 .small-button {
   font-size: 13px !important;
