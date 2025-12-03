@@ -424,7 +424,7 @@ html.dark .panel-form select {
 
   width: 100%;
   max-width: 780px;
-  min-height: 900px; /* tamaño tipo A4 en pantalla */
+  min-height: auto;
   margin: 0 auto;
   position: relative;
 }
