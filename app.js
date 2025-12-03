@@ -148,7 +148,11 @@ btnGenerar.addEventListener("click", async () => {
 
     estadoEl.textContent = "";
     ebookHtmlEl.innerHTML = data.html;
-    lastEbookHtml = data.html; // 
+    lastEbookHtml = data.html;
+
+    // Crear páginas reales
+    paginarEbook();
+
 
    // =========================================
 // SISTEMA DE PAGINADO REAL (CORREGIDO)
@@ -246,6 +250,53 @@ btnCopiar.addEventListener("click", async () => {
     setTimeout(() => (btnCopiar.textContent = "Copiar HTML"), 1600);
   }
 });
+
+// =======================================
+// SISTEMA REAL DE PAGINADO DEL EBOOK
+// =======================================
+function paginarEbook() {
+  const ebookHtmlEl = document.getElementById("ebook-html");
+  const rawContent = ebookHtmlEl.innerHTML;
+
+  // Crear contenedor temporal
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = rawContent;
+
+  let pages = [];
+  let currentPage = document.createElement("div");
+  currentPage.classList.add("ebook-page");
+
+  const elements = Array.from(tempDiv.childNodes);
+
+  elements.forEach(el => {
+    // Si inicia capítulo → nueva página
+    if (el.tagName === "H2") {
+      if (currentPage.childNodes.length > 0) {
+        pages.push(currentPage);
+      }
+      currentPage = document.createElement("div");
+      currentPage.classList.add("ebook-page");
+    }
+
+    currentPage.appendChild(el.cloneNode(true));
+
+    // Si se excede altura → nueva página
+    if (currentPage.scrollHeight > 1400) {
+      pages.push(currentPage);
+      currentPage = document.createElement("div");
+      currentPage.classList.add("ebook-page");
+    }
+  });
+
+  if (currentPage.childNodes.length > 0) {
+    pages.push(currentPage);
+  }
+
+  // Renderizar páginas reales
+  ebookHtmlEl.innerHTML = "";
+  pages.forEach(p => ebookHtmlEl.appendChild(p));
+}
+
 
 
 // ===== DESCARGAR PDF (A4 / CARTA / 6x9) =====
