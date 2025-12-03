@@ -735,11 +735,11 @@ html.dark .ebook-page {
   padding: 5px 10px !important;
 }
 
-/* Botón Cambiar Plan — estilo premium dorado */
+/* BOTÓN CAMBIAR PLAN — DORADO REAL */
 .gold-button-outline {
   background: transparent;
-  border: 1px solid var(--gold-strong);
-  color: var(--gold-strong);
+  border: 1px solid #d4af37;    /* oro */
+  color: #d4af37;
   padding: 7px 14px;
   border-radius: 8px;
   font-size: 14px;
@@ -751,10 +751,11 @@ html.dark .ebook-page {
   gap: 6px;
 }
 
+/* HOVER EN MODO CLARO Y OSCURO */
 .gold-button-outline:hover {
-  background: var(--gold-strong);
-  color: #000;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+  background: #d4af37;      /* fondo dorado */
+  color: #000000;           /* texto negro para contraste */
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
 }
 
 /* Tamaño reducido */
@@ -762,10 +763,4 @@ html.dark .ebook-page {
   font-size: 13px !important;
   padding: 6px 12px !important;
 }
-
-
-
-
-
-
 
