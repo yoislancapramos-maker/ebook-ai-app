@@ -358,11 +358,17 @@ html.dark .panel-form select {
 /* Estilo interno del ebook */
 
 .ebook-page {
+  width: 100%;
   max-width: 750px;
-  margin: 0 auto;
-  line-height: 1.75;
-  font-size: 17px; /* ← letra más grande para PDF */
+  min-height: 1000px;
+  padding: 40px 50px;
+  margin: 20px auto;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.05);
 }
+
 
 .ebook-page h1 {
   font-family: var(--font-title);
