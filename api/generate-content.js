@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     capitulos,
     autor,
     plantilla,
-    plan
+    plan // ya no lo usamos para calidad, solo se pasa desde el front por si lo necesitas luego
   } = req.body || {};
 
   if (!tema || !publico || !objetivo || !capitulos) {
@@ -26,125 +26,146 @@ export default async function handler(req, res) {
 
   const detalleMap = {
     basico:
-      "extensión clara y directa, 10-15 páginas aproximadas en formato PDF, equivalente a un contenido moderado",
+      "extensión clara y directa, similar a unas 10-15 páginas en PDF, sin paja, pero con ejemplos y ejercicios útiles",
     medio:
-      "extensión media, con explicaciones, ejemplos y ejercicios, 20-30 páginas aproximadas en formato PDF, equivalente a un contenido amplio",
+      "extensión media, similar a unas 20-30 páginas en PDF, con explicaciones, ejemplos, casos breves y ejercicios prácticos",
     alto:
-      "extensión alta, muy detallada, con marcos conceptuales, ejemplos, casos y ejercicios, 30-50 páginas aproximadas en formato PDF. El contenido debe ser extenso."
+      "extensión alta, similar a unas 30-50 páginas en PDF, con marcos conceptuales, ejemplos desarrollados, mini casos de estudio y varios ejercicios por capítulo. El contenido debe ser extenso y profundo, pero siempre práctico"
   };
 
   const tipoMap = {
-    guia: "una guía paso a paso muy práctica",
-    plan: "un plan detallado organizado por días o semanas",
-    checklist: "una checklist accionable acompañada de consejos prácticos",
+    guia: "una guía paso a paso muy práctica y accionable",
+    plan: "un plan estructurado por días o semanas con acciones concretas",
+    checklist: "una checklist accionable con explicaciones breves y claras",
     mixto:
-      "una combinación de guía paso a paso, plan de días y checklist final accionable"
+      "una combinación de guía paso a paso, plan accionable y checklist final"
   };
 
   const plantillaMap = {
-    minimal: "Minimal Pro (limpia, profesional, muy legible)",
-    business: "Business Blue (corporativa, seria, ideal para negocios)",
-    creative: "Creativa Full Color (más llamativa y colorida, ideal para creatividad y redes sociales)"
+    minimal:
+      "Minimal Pro (limpia, profesional, muy legible, estilo editorial moderno)",
+    business:
+      "Business Blue (corporativa, seria, ideal para negocios y profesionales)",
+    creative:
+      "Creativa Full Color (llamativa y colorida, ideal para creatividad, marketing y redes sociales)"
   };
 
   const detalleTexto = detalleMap[profundidad] || detalleMap.medio;
   const tipoTexto = tipoMap[tipo] || tipoMap.guia;
   const plantillaTexto = plantillaMap[plantilla] || plantillaMap.minimal;
 
-  // Ambos modelos dan buena calidad, solo cambiamos capacidad interna
-  const model = plan === "pro" ? "gpt-4o" : "gpt-4o-mini";
+  // Misma calidad para todos los planes (como acordamos)
+  const model = "gpt-4o";
 
   const prompt = `
-Quiero que actúes como un autor experto que escribe ebooks prácticos en español, con mucho valor real y sin paja.
+Quiero que actúes como un autor profesional de ebooks en español, especializado en resolver problemas reales de las personas, sin paja y sin relleno aburrido.
 
-Datos del ebook:
+DATOS DEL EBOOK
 - Tema principal: ${tema}
 - Público objetivo: ${publico}
 - Objetivo del ebook: ${objetivo}
 - Tipo de ebook: ${tipoTexto}
-- Nivel de detalle: ${detalleTexto}
+- Nivel de detalle y extensión: ${detalleTexto}
 - Número aproximado de capítulos principales: ${capitulos}
 - Autor o marca: ${autorFinal}
-- Estilo visual (plantilla): ${plantillaTexto}
+- Estilo visual de maquetación: ${plantillaTexto}
 
-Instrucciones de estilo:
-- Sé muy práctico: incluye pasos concretos, ejemplos aplicados al público objetivo y mini ejercicios.
-- Evita frases genéricas, relleno y repeticiones innecesarias.
-- No inventes estadísticas ni porcentajes falsos.
-- Usa un tono cercano pero profesional.
-- No hables de que eres una IA ni menciones modelos de lenguaje.
-- El contenido debe ser relativamente extenso y detallado; no resumas demasiado.
+ESTILO QUE QUIERO (HÍBRIDO PROFESIONAL)
+- Debe ser muy práctico y accionable, pero también profundo.
+- Cada capítulo debe ayudar al lector a avanzar de forma real sobre su problema.
+- Nada de frases genéricas tipo "es muy importante ser constante" sin explicar CÓMO.
+- Usa ejemplos, mini casos, pasos claros y ejercicios.
+- El lector debe sentir que este ebook VALE DINERO y le resuelve su problema.
+- No seas repetitivo ni des vueltas largas, pero sí desarrolla bien cada idea.
+- No inventes estadísticas ni porcentajes concretos.
+- Tono cercano pero profesional, como un buen mentor.
 
-Puedes usar estos bloques visuales cuando tenga sentido:
-- Para una idea muy importante, usa:
-  <div class="highlight-box"><strong>Título breve del bloque:</strong> Explicación práctica.</div>
-- Para consejos específicos, usa:
-  <div class="tip-box"><strong>Tip:</strong> Consejo práctico que el lector pueda aplicar.</div>
-- Para actividades y ejercicios, usa:
-  <div class="exercise-box"><strong>Ejercicio:</strong> Explica qué debe hacer el lector paso a paso.</div>
+BLOQUES VISUALES DISPONIBLES
+Puedes incluir cuando tenga sentido (pero sin abusar):
+- Bloque de idea clave:
+  <div class="highlight-box"><strong>Idea clave:</strong> Explicación práctica orientada al problema.</div>
 
-Estructura obligatoria del ebook (EN HTML SENCILLO, SIN <html> NI <body>):
+- Bloque de consejo:
+  <div class="tip-box"><strong>Tip:</strong> Consejo práctico y específico que el lector pueda aplicar hoy mismo.</div>
 
-1) Portada:
+- Bloque de ejercicio:
+  <div class="exercise-box"><strong>Ejercicio:</strong> Explica paso a paso qué debe hacer el lector.</div>
+
+ESTRUCTURA OBLIGATORIA DEL EBOOK
+Devuelve TODO en HTML sencillo, SIN <html>, SIN <body>, SIN <head>, SIN CSS.
+
+1) PORTADA
+Debe ser potente, clara y orientada al beneficio:
 <h1>Título potente del ebook</h1>
-<p class="subtitle">Subtítulo claro, orientado al beneficio principal</p>
+<p class="subtitle">Subtítulo claro, enfocado al beneficio principal para el lector</p>
 <p class="author">Por ${autorFinal}</p>
 
-2) Introducción:
+2) INTRODUCCIÓN
 <h2>Introducción</h2>
-<p>Explica el problema, por qué importa para este público y qué conseguirá el lector al aplicar el contenido.</p>
+<p>Explica el problema actual del público objetivo, por qué les duele, qué errores cometen normalmente y qué conseguirá el lector si aplica este ebook.</p>
 
-3) Índice:
+3) ÍNDICE
 <h2>Índice</h2>
 <ul>
   <li>Capítulo 1: ...</li>
   <li>Capítulo 2: ...</li>
-  ...
+  <li>Capítulo 3: ...</li>
+  <!-- ajusta al número de capítulos aproximado ${capitulos} -->
 </ul>
 
-4) Capítulos:
-Para cada capítulo, respeta este esquema y desarrolla de forma detallada:
+4) CAPÍTULOS (ESTRUCTURA HÍBRIDA POR CADA CAPÍTULO)
+Para cada uno de los ${capitulos} capítulos, usa SIEMPRE esta estructura y desarróllala con bastante contenido:
+
 <h2>Capítulo X - Título del capítulo</h2>
-<p>Texto introductorio que conecta con la realidad del lector.</p>
+<p>Texto introductorio que describa la situación típica del lector relacionada con este capítulo.</p>
 
 <h3>Conceptos clave</h3>
 <ul>
-  <li>Concepto + explicación práctica orientada al público objetivo.</li>
-  <li>Otro concepto importante con ejemplo breve.</li>
+  <li>Concepto importante + explicación práctica aplicada al público objetivo.</li>
+  <li>Otro concepto importante con ejemplo concreto.</li>
+  <li>Si es necesario, un tercer concepto para completar la comprensión.</li>
 </ul>
 
 <h3>Pasos accionables</h3>
 <ol>
-  <li>Paso concreto que el lector pueda aplicar.</li>
-  <li>Otro paso concreto que se pueda hacer en poco tiempo.</li>
+  <li>Paso detallado que el lector pueda aplicar, con ejemplos específicos.</li>
+  <li>Segundo paso con acciones claras en el día a día.</li>
+  <li>Tercer paso que ayude a consolidar el cambio.</li>
 </ol>
 
 <h3>Ejemplo aplicado</h3>
-<p>Ejemplo sencillo y realista aplicando el contenido del capítulo al público objetivo.</p>
+<p>Cuenta un ejemplo realista y sencillo donde se vea cómo una persona de este público aplica estos pasos y mejora su situación.</p>
+
+<h3>Mini caso práctico</h3>
+<p>Breve caso práctico adicional (puede ser tipo historia resumida) que refuerce el aprendizaje.</p>
 
 <h3>Mini ejercicio</h3>
 <ul>
-  <li>Ejercicio o pregunta que el lector pueda hacer hoy mismo para avanzar.</li>
+  <li>Ejercicio o reflexión guiada que el lector pueda hacer hoy mismo (incluye instrucciones claras).</li>
 </ul>
 
-Cuando tenga sentido, añade uno o varios bloques usando las clases highlight-box, tip-box o exercise-box para destacar ideas clave, tips o ejercicios adicionales.
+En algunos capítulos (no en todos), añade uno o varios bloques usando:
+- <div class="highlight-box"> para ideas clave
+- <div class="tip-box"> para consejos accionables
+- <div class="exercise-box"> para ejercicios extra
 
-5) Conclusión:
+5) CONCLUSIÓN FINAL
 <h2>Conclusión</h2>
-<p>Resumen de ideas clave, recordatorio del objetivo y mensaje final motivador.</p>
+<p>Resume las ideas clave de todo el ebook, refuerza el objetivo principal y motiva al lector a aplicar lo aprendido. Incluye una llamada a la acción clara.</p>
 
-6) Bonus:
+6) BONUS FINAL
 <h2>Bonus: Checklist o plan accionable</h2>
 <ul>
   <li>Punto accionable concreto, breve y claro.</li>
-  <li>Otro punto accionable que el lector pueda aplicar de inmediato.</li>
+  <li>Otro punto que el lector pueda aplicar esta semana.</li>
+  <li>Otro punto para consolidar el hábito o resultado.</li>
 </ul>
 
-REGLAS IMPORTANTES:
-- Devuelve SOLO el contenido interno como si ya estuviera dentro de <div class="ebook-page">...</div>, pero NO añadas esa etiqueta, yo la envolveré después.
-- Usa solo etiquetas HTML básicas: h1, h2, h3, p, ul, ol, li, strong, em, y los div con clases highlight-box, tip-box, exercise-box.
-- No incluyas CSS, ni scripts, ni estilos en línea.
-- Asegúrate de que el contenido sea útil, coherente, práctico y con suficiente extensión.
+REGLAS TÉCNICAS IMPORTANTES
+- No envuelvas todo en <div class="ebook-page"> ni en ningún <div> global, devuélvelo TAL CUAL en HTML plano. El frontend se encargará de envolverlo.
+- Usa solo estas etiquetas: h1, h2, h3, p, ul, ol, li, strong, em, div con las clases highlight-box, tip-box, exercise-box.
+- No incluyas estilos CSS, ni <style>, ni <script>, ni enlaces, ni imágenes.
+- El contenido debe ser extenso, útil y coherente con el tema: prioriza siempre resolver el problema real del lector.
 `;
 
   try {
@@ -167,7 +188,7 @@ REGLAS IMPORTANTES:
           {
             role: "system",
             content:
-              "Eres un autor experto que escribe ebooks altamente prácticos y accionables en español."
+              "Eres un autor experto que escribe ebooks altamente prácticos, accionables y sin paja en español. Tu prioridad es ayudar al lector a resolver un problema real."
           },
           { role: "user", content: prompt }
         ],
@@ -187,7 +208,8 @@ REGLAS IMPORTANTES:
     const json = await openaiRes.json();
     const content = json.choices?.[0]?.message?.content || "";
 
-    const html = `<div class="ebook-page">\n${content.trim()}\n</div>`;
+    // IMPORTANTE: ya no envolvemos en <div class="ebook-page">
+    const html = content.trim();
 
     return res.status(200).json({ html });
   } catch (err) {
@@ -195,3 +217,4 @@ REGLAS IMPORTANTES:
     return res.status(500).json({ error: "Error interno del servidor" });
   }
 }
+
