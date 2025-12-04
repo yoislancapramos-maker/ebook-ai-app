@@ -57,116 +57,105 @@ export default async function handler(req, res) {
   // Misma calidad para todos los planes (como acordamos)
   const model = "gpt-4o";
 
-  const prompt = `
-Quiero que actúes como un autor profesional de ebooks en español, especializado en resolver problemas reales de las personas, sin paja y sin relleno aburrido.
+    const prompt = `
+Quiero que actúes como un autor experto que escribe ebooks prácticos en español, con mucho valor real y sin paja.
 
-DATOS DEL EBOOK
+Datos del ebook:
 - Tema principal: ${tema}
 - Público objetivo: ${publico}
 - Objetivo del ebook: ${objetivo}
 - Tipo de ebook: ${tipoTexto}
-- Nivel de detalle y extensión: ${detalleTexto}
-- Número aproximado de capítulos principales: ${capitulos}
+- Nivel de detalle: ${detalleTexto}
+- Número EXACTO de capítulos principales que debes crear: ${capitulos}
 - Autor o marca: ${autorFinal}
-- Estilo visual de maquetación: ${plantillaTexto}
+- Estilo visual (plantilla): ${plantillaTexto}
 
-ESTILO QUE QUIERO (HÍBRIDO PROFESIONAL)
-- Debe ser muy práctico y accionable, pero también profundo.
-- Cada capítulo debe ayudar al lector a avanzar de forma real sobre su problema.
-- Nada de frases genéricas tipo "es muy importante ser constante" sin explicar CÓMO.
-- Usa ejemplos, mini casos, pasos claros y ejercicios.
-- El lector debe sentir que este ebook VALE DINERO y le resuelve su problema.
-- No seas repetitivo ni des vueltas largas, pero sí desarrolla bien cada idea.
-- No inventes estadísticas ni porcentajes concretos.
-- Tono cercano pero profesional, como un buen mentor.
+Instrucciones de estilo:
+- Sé muy práctico: incluye pasos concretos, ejemplos aplicados al público objetivo y mini ejercicios.
+- Evita frases genéricas, relleno y repeticiones innecesarias.
+- No inventes estadísticas ni porcentajes falsos.
+- Usa un tono cercano pero profesional.
+- No hables de que eres una IA ni menciones modelos de lenguaje.
+- El contenido debe ser relativamente extenso y detallado; no resumas demasiado.
+- Escribe de forma fluida en español neutro.
 
-BLOQUES VISUALES DISPONIBLES
-Puedes incluir cuando tenga sentido (pero sin abusar):
-- Bloque de idea clave:
-  <div class="highlight-box"><strong>Idea clave:</strong> Explicación práctica orientada al problema.</div>
+Puedes usar estos bloques visuales cuando tenga sentido:
+- Para una idea muy importante, usa:
+  <div class="highlight-box"><strong>Título breve del bloque:</strong> Explicación práctica.</div>
+- Para consejos específicos, usa:
+  <div class="tip-box"><strong>Tip:</strong> Consejo práctico que el lector pueda aplicar.</div>
+- Para actividades y ejercicios, usa:
+  <div class="exercise-box"><strong>Ejercicio:</strong> Explica qué debe hacer el lector paso a paso.</div>
 
-- Bloque de consejo:
-  <div class="tip-box"><strong>Tip:</strong> Consejo práctico y específico que el lector pueda aplicar hoy mismo.</div>
+Estructura obligatoria del ebook (EN HTML SENCILLO, SIN <html> NI <body>):
 
-- Bloque de ejercicio:
-  <div class="exercise-box"><strong>Ejercicio:</strong> Explica paso a paso qué debe hacer el lector.</div>
-
-ESTRUCTURA OBLIGATORIA DEL EBOOK
-Devuelve TODO en HTML sencillo, SIN <html>, SIN <body>, SIN <head>, SIN CSS.
-
-1) PORTADA
-Debe ser potente, clara y orientada al beneficio:
+1) Portada:
 <h1>Título potente del ebook</h1>
-<p class="subtitle">Subtítulo claro, enfocado al beneficio principal para el lector</p>
+<p class="subtitle">Subtítulo claro, orientado al beneficio principal</p>
 <p class="author">Por ${autorFinal}</p>
 
-2) INTRODUCCIÓN
+2) Introducción:
 <h2>Introducción</h2>
-<p>Explica el problema actual del público objetivo, por qué les duele, qué errores cometen normalmente y qué conseguirá el lector si aplica este ebook.</p>
+<p>Explica el problema, por qué importa para este público y qué conseguirá el lector al aplicar el contenido.</p>
 
-3) ÍNDICE
+3) Índice:
 <h2>Índice</h2>
 <ul>
-  <li>Capítulo 1: ...</li>
-  <li>Capítulo 2: ...</li>
-  <li>Capítulo 3: ...</li>
-  <!-- ajusta al número de capítulos aproximado ${capitulos} -->
+  <!-- Debes generar exactamente ${capitulos} elementos de índice -->
+  <li>Capítulo 1: título del capítulo 1</li>
+  <li>Capítulo 2: título del capítulo 2</li>
+  ...
+  <li>Capítulo ${capitulos}: título del capítulo ${capitulos}</li>
 </ul>
 
-4) CAPÍTULOS (ESTRUCTURA HÍBRIDA POR CADA CAPÍTULO)
-Para cada uno de los ${capitulos} capítulos, usa SIEMPRE esta estructura y desarróllala con bastante contenido:
+4) Capítulos:
+Debes generar EXACTAMENTE ${capitulos} capítulos. Para cada capítulo respeta este esquema y desarrolla de forma detallada:
 
 <h2>Capítulo X - Título del capítulo</h2>
-<p>Texto introductorio que describa la situación típica del lector relacionada con este capítulo.</p>
+<p>Texto introductorio que conecta con la realidad del lector.</p>
 
 <h3>Conceptos clave</h3>
 <ul>
-  <li>Concepto importante + explicación práctica aplicada al público objetivo.</li>
-  <li>Otro concepto importante con ejemplo concreto.</li>
-  <li>Si es necesario, un tercer concepto para completar la comprensión.</li>
+  <li>Concepto + explicación práctica orientada al público objetivo.</li>
+  <li>Otro concepto importante con ejemplo breve.</li>
 </ul>
 
 <h3>Pasos accionables</h3>
 <ol>
-  <li>Paso detallado que el lector pueda aplicar, con ejemplos específicos.</li>
-  <li>Segundo paso con acciones claras en el día a día.</li>
-  <li>Tercer paso que ayude a consolidar el cambio.</li>
+  <li>Paso concreto que el lector pueda aplicar.</li>
+  <li>Otro paso concreto que se pueda hacer en poco tiempo.</li>
 </ol>
 
 <h3>Ejemplo aplicado</h3>
-<p>Cuenta un ejemplo realista y sencillo donde se vea cómo una persona de este público aplica estos pasos y mejora su situación.</p>
-
-<h3>Mini caso práctico</h3>
-<p>Breve caso práctico adicional (puede ser tipo historia resumida) que refuerce el aprendizaje.</p>
+<p>Ejemplo sencillo y realista aplicando el contenido del capítulo al público objetivo.</p>
 
 <h3>Mini ejercicio</h3>
 <ul>
-  <li>Ejercicio o reflexión guiada que el lector pueda hacer hoy mismo (incluye instrucciones claras).</li>
+  <li>Ejercicio o pregunta que el lector pueda hacer hoy mismo para avanzar.</li>
 </ul>
 
-En algunos capítulos (no en todos), añade uno o varios bloques usando:
-- <div class="highlight-box"> para ideas clave
-- <div class="tip-box"> para consejos accionables
-- <div class="exercise-box"> para ejercicios extra
+Cuando tenga sentido, añade uno o varios bloques usando las clases highlight-box, tip-box o exercise-box para destacar ideas clave, tips o ejercicios adicionales.
 
-5) CONCLUSIÓN FINAL
+5) Conclusión:
 <h2>Conclusión</h2>
-<p>Resume las ideas clave de todo el ebook, refuerza el objetivo principal y motiva al lector a aplicar lo aprendido. Incluye una llamada a la acción clara.</p>
+<p>Resumen de ideas clave, recordatorio del objetivo y mensaje final motivador.</p>
 
-6) BONUS FINAL
+6) Bonus:
 <h2>Bonus: Checklist o plan accionable</h2>
 <ul>
   <li>Punto accionable concreto, breve y claro.</li>
-  <li>Otro punto que el lector pueda aplicar esta semana.</li>
-  <li>Otro punto para consolidar el hábito o resultado.</li>
+  <li>Otro punto accionable que el lector pueda aplicar de inmediato.</li>
 </ul>
 
-REGLAS TÉCNICAS IMPORTANTES
-- No envuelvas todo en <div class="ebook-page"> ni en ningún <div> global, devuélvelo TAL CUAL en HTML plano. El frontend se encargará de envolverlo.
-- Usa solo estas etiquetas: h1, h2, h3, p, ul, ol, li, strong, em, div con las clases highlight-box, tip-box, exercise-box.
-- No incluyas estilos CSS, ni <style>, ni <script>, ni enlaces, ni imágenes.
-- El contenido debe ser extenso, útil y coherente con el tema: prioriza siempre resolver el problema real del lector.
+REGLAS IMPORTANTES:
+- Devuelve SOLO el contenido interno como si ya estuviera dentro de <div class="ebook-page">...</div>, pero NO añadas esa etiqueta, yo la envolveré después.
+- Usa solo etiquetas HTML básicas: h1, h2, h3, p, ul, ol, li, strong, em, y los div con clases highlight-box, tip-box, exercise-box.
+- No incluyas CSS, ni scripts, ni estilos en línea.
+- DEBES generar exactamente ${capitulos} capítulos (Capítulo 1, Capítulo 2, ..., Capítulo ${capitulos}). No menos.
+- No combines varios capítulos en uno solo.
+- Asegúrate de que el contenido sea útil, coherente, práctico y con suficiente extensión.
 `;
+
 
   try {
     const apiKey = process.env.OPENAI_API_KEY;
