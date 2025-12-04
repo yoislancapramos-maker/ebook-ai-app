@@ -1,265 +1,257 @@
-/* ============================================================
-   AI GOLDEN EBOOK STUDIO — app.js
-   Archivo completamente reestructurado, limpio y funcional
-   Incluye: acceso, generación, paginado real y exportación PDF
-============================================================ */
+// app.js
+// Lógica principal de Golden Ebook Studio
 
-/* ============================
-      CONFIGURACIÓN
-============================ */
+document.addEventListener("DOMContentLoaded", () => {
+  const body = document.body;
 
-const BASIC_KEY = "BASICO-2025";
-const PRO_KEY = "PRO-2025";
-const ACCESS_STORAGE_KEY = "golden_ebook_access";
+  // Elementos de la UI
+  const accessPanel = document.getElementById("accessPanel");
+  const appMain = document.getElementById("appMain");
+  const userNameInput = document.getElementById("userName");
+  const planSelect = document.getElementById("planSelect");
+  const accessKeyInput = document.getElementById("accessKey");
+  const enterAppBtn = document.getElementById("enterAppBtn");
+  const accessError = document.getElementById("accessError");
+  const changePlanBtn = document.getElementById("changePlanBtn");
+  const themeToggleBtn = document.getElementById("themeToggleBtn");
 
-let lastEbookHtml = "";
+  const ebookTitleInput = document.getElementById("ebookTitle");
+  const ebookTopicInput = document.getElementById("ebookTopic");
+  const depthLevelSelect = document.getElementById("depthLevel");
+  const extraInstructionsInput = document.getElementById("extraInstructions");
+  const generateEbookBtn = document.getElementById("generateEbookBtn");
+  const newEbookBtn = document.getElementById("newEbookBtn");
+  const generationStatus = document.getElementById("generationStatus");
 
-/* ============================
-      TEMA CLARO/OSCURO
-============================ */
+  const ebookEditor = document.getElementById("ebookEditor");
+  const exportPdfBtn = document.getElementById("exportPdfBtn");
+  const currentPlanLabel = document.getElementById("currentPlanLabel");
 
-const themeToggleBtn = document.getElementById("theme-toggle");
+  // "Base de datos" de claves válidas (front-end)
+  const VALID_KEYS = {
+    basico: "BASICO-2025",
+    pro: "PRO-2025"
+  };
 
-themeToggleBtn.addEventListener("click", () => {
-  const html = document.documentElement;
-  const isDark = html.classList.toggle("dark");
-  themeToggleBtn.textContent = isDark ? "☀️" : "🌙";
-});
+  let currentPlan = null;
 
-/* ============================
-      ACCESO POR CLAVE
-============================ */
-
-const accessCard = document.getElementById("access-card");
-const mainApp = document.getElementById("main-app");
-const planSelect = document.getElementById("plan");
-const accessInput = document.getElementById("access-key");
-const accessBtn = document.getElementById("access-submit");
-const accessError = document.getElementById("access-error");
-const changePlanBtn = document.getElementById("change-plan");
-
-// Si ya está logueado → entrar directo
-if (localStorage.getItem(ACCESS_STORAGE_KEY) === "ok") {
-  accessCard.hidden = true;
-  mainApp.hidden = false;
-}
-
-// Botón Cambiar Plan
-changePlanBtn.addEventListener("click", () => {
-  localStorage.removeItem(ACCESS_STORAGE_KEY);
-  accessCard.hidden = false;
-  mainApp.hidden = true;
-  accessInput.value = "";
-  accessError.textContent = "";
-});
-
-// Validación de acceso
-accessBtn.addEventListener("click", () => {
-  const plan = planSelect.value;
-  const key = accessInput.value.trim();
-
-  if (!key) {
-    accessError.textContent = "Introduce la clave de acceso.";
-    return;
-  }
-
-  const expected = plan === "basic" ? BASIC_KEY : PRO_KEY;
-
-  if (key !== expected) {
-    accessError.textContent = "Clave incorrecta. Verifica el plan y la clave.";
-    return;
-  }
-
-  accessError.textContent = "";
-  localStorage.setItem(ACCESS_STORAGE_KEY, "ok");
-  accessCard.hidden = true;
-  mainApp.hidden = false;
-});
-
-/* ============================
-      GENERACIÓN DE EBOOK
-============================ */
-
-const btnGenerar = document.getElementById("btn-generar");
-const estadoEl = document.getElementById("estado");
-const ebookHtmlEl = document.getElementById("ebook-html");
-const btnCopiar = document.getElementById("btn-copiar");
-const btnPdf = document.getElementById("btn-pdf");
-
-btnGenerar.addEventListener("click", async () => {
-  const tema = document.getElementById("tema").value.trim();
-  const publico = document.getElementById("publico").value.trim();
-  const objetivo = document.getElementById("objetivo").value.trim();
-  const tipo = document.getElementById("tipo").value;
-  const profundidad = document.getElementById("profundidad").value;
-  const capitulos = parseInt(document.getElementById("capitulos").value, 10);
-  const autor = document.getElementById("autor").value.trim();
-  const plantilla = document.getElementById("plantilla").value;
-  const plan = planSelect.value;
-
-  if (!tema || !publico || !objetivo || !capitulos || capitulos <= 0) {
-    estadoEl.textContent = "Completa tema, público, objetivo y capítulos.";
-    return;
-  }
-
-  estadoEl.textContent = "Generando ebook con IA...";
-  ebookHtmlEl.innerHTML = `<div class="ebook-page"><p>Generando contenido...</p></div>`;
-
-  try {
-    const resp = await fetch("/api/generate-content", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        tema,
-        publico,
-        objetivo,
-        tipo,
-        profundidad,
-        capitulos,
-        autor,
-        plantilla,
-        plan
-      }),
-    });
-
-    if (!resp.ok) throw new Error("Error al generar contenido");
-
-    const data = await resp.json();
-    if (!data.html) throw new Error("Contenido vacío");
-
-    lastEbookHtml = data.html;
-
-    // Insertamos contenido y paginamos
-    ebookHtmlEl.innerHTML = data.html;
-
-    paginarEbook(plantilla);
-
-    estadoEl.textContent = "Ebook generado correctamente.";
-
-  } catch (err) {
-    console.error(err);
-    estadoEl.textContent = "Error al generar el ebook.";
-    ebookHtmlEl.innerHTML = `<div class="ebook-page"><p>Error al generar.</p></div>`;
-  }
-});
-
-/* ============================
-      SISTEMA DE PAGINADO REAL
-============================ */
-
-function paginarEbook() {
-  const ebookHtmlEl = document.getElementById("ebook-html");
-  const rawContent = ebookHtmlEl.innerHTML;
-
-  // Contenedor temporal
-  const temp = document.createElement("div");
-  temp.innerHTML = rawContent;
-
-  ebookHtmlEl.innerHTML = "";
-
-  const MAX_HEIGHT = 1050; // altura realista de una página visual
-
-  let currentPage = crearPagina();
-  let pages = [];
-
-  function crearPagina() {
-    const page = document.createElement("div");
-    page.classList.add("ebook-page");
-    ebookHtmlEl.appendChild(page);
-    return page;
-  }
-
-  const elementos = Array.from(temp.childNodes);
-
-  elementos.forEach(el => {
-    const clone = el.cloneNode(true);
-
-    // Regla: si viene un H2 → nueva página
-    if (clone.tagName === "H2" && currentPage.childNodes.length > 0) {
-      currentPage = crearPagina();
-    }
-
-    currentPage.appendChild(clone);
-
-    // Regla de desborde
-    if (currentPage.scrollHeight > MAX_HEIGHT) {
-      currentPage.removeChild(clone);
-
-      currentPage = crearPagina();
-      currentPage.appendChild(clone);
+  // -------------------------
+  // MODO CLARO / OSCURO
+  // -------------------------
+  themeToggleBtn.addEventListener("click", () => {
+    const isLight = body.classList.contains("theme-light");
+    if (isLight) {
+      body.classList.remove("theme-light");
+      themeToggleBtn.textContent = "☀️ Modo claro";
+    } else {
+      body.classList.add("theme-light");
+      themeToggleBtn.textContent = "🌙 Modo oscuro";
     }
   });
-}
 
-/* ============================
-      COPIAR HTML
-============================ */
+  // -------------------------
+  // CONTROL DE ACCESO
+  // -------------------------
+  enterAppBtn.addEventListener("click", () => {
+    const name = (userNameInput.value || "").trim();
+    const plan = planSelect.value;
+    const key = (accessKeyInput.value || "").trim();
 
-btnCopiar.addEventListener("click", async () => {
-  if (!lastEbookHtml) return;
+    accessError.style.display = "none";
 
-  try {
-    await navigator.clipboard.writeText(lastEbookHtml);
-    btnCopiar.textContent = "¡Copiado!";
-    setTimeout(() => (btnCopiar.textContent = "Copiar HTML"), 1500);
-  } catch {
-    btnCopiar.textContent = "Error";
+    if (!name) {
+      accessError.textContent = "Escribe tu nombre.";
+      accessError.style.display = "block";
+      return;
+    }
+
+    if (!key) {
+      accessError.textContent = "Escribe la clave de suscripción.";
+      accessError.style.display = "block";
+      return;
+    }
+
+    const expectedKey = VALID_KEYS[plan];
+    if (key !== expectedKey) {
+      accessError.textContent = "Clave incorrecta. Verifica tu plan y clave.";
+      accessError.style.display = "block";
+      return;
+    }
+
+    currentPlan = plan;
+    updatePlanLabel(name, plan);
+    accessPanel.style.display = "none";
+    appMain.style.display = "grid";
+    changePlanBtn.style.display = "inline-flex";
+  });
+
+  function updatePlanLabel(name, plan) {
+    const planName = plan === "pro" ? "Plan Pro" : "Plan Básico";
+    currentPlanLabel.textContent = `${name} · ${planName}`;
   }
-});
 
-// =========================
-// EXPORTAR PDF CORRECTO
-// =========================
+  changePlanBtn.addEventListener("click", () => {
+    // Volver al panel de acceso sin recargar
+    appMain.style.display = "none";
+    accessPanel.style.display = "block";
+    changePlanBtn.style.display = "none";
+    currentPlan = null;
+  });
 
-btnPdf.addEventListener("click", async () => {
-  const pages = Array.from(document.querySelectorAll(".ebook-page"));
+  // -------------------------
+  // GENERACIÓN DE EBOOK (stub IA)
+  // -------------------------
+  generateEbookBtn.addEventListener("click", async () => {
+    const title = (ebookTitleInput.value || "").trim();
+    const topic = (ebookTopicInput.value || "").trim();
+    const depth = depthLevelSelect.value;
+    const extra = (extraInstructionsInput.value || "").trim();
 
-  if (!pages.length) {
-    estadoEl.textContent = "Genera un ebook antes de exportar.";
-    return;
+    if (!title) {
+      alert("Escribe un título para el ebook.");
+      return;
+    }
+    if (!topic) {
+      alert("Escribe el tema o nicho del ebook.");
+      return;
+    }
+
+    const depthConfig = {
+      basico: {
+        label: "Básico",
+        targetWords: 1500 // equivalente aprox. a pocas páginas
+      },
+      medio: {
+        label: "Medio",
+        targetWords: 3000 // ebook estándar
+      },
+      alto: {
+        label: "Alto",
+        targetWords: 5000 // más extenso
+      }
+    };
+
+    const config = depthConfig[depth] || depthConfig.basico;
+
+    generationStatus.textContent =
+      "Generando contenido con IA... Esto puede tardar unos segundos.";
+    generateEbookBtn.disabled = true;
+
+    try {
+      // 🔴 IMPORTANTE:
+      // Aquí es donde tú conectarías tu backend / API real.
+      //
+      // Ejemplo imaginario (AJUSTA A TU /api/generate-content.js):
+      //
+      // const response = await fetch("/api/generate-content.js", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({
+      //     title,
+      //     topic,
+      //     depth: config.label,
+      //     targetWords: config.targetWords,
+      //     extra
+      //   })
+      // });
+      // const data = await response.json();
+      // const generatedText = data.content;
+      //
+      // ebookEditor.innerHTML = generatedText;
+
+      // Mientras tanto (para no romper nada), dejo un texto de ejemplo:
+      const fakeContent = buildExampleEbook(title, topic, config, extra);
+      ebookEditor.innerHTML = fakeContent;
+
+      generationStatus.textContent =
+        "Ebook generado. Puedes editar el texto antes de descargar el PDF.";
+    } catch (error) {
+      console.error("Error generando ebook:", error);
+      generationStatus.textContent =
+        "Hubo un error generando el ebook. Revisa la consola.";
+    } finally {
+      generateEbookBtn.disabled = false;
+    }
+  });
+
+  function buildExampleEbook(title, topic, config, extra) {
+    const extrasBlock = extra
+      ? `<p><em>Instrucciones aplicadas: ${escapeHtml(extra)}</em></p>`
+      : "";
+
+    return `
+      <h1>${escapeHtml(title)}</h1>
+      <p><strong>Nivel:</strong> ${config.label} · ~${config.targetWords} palabras objetivo</p>
+      ${extrasBlock}
+      <h2>Introducción</h2>
+      <p>
+        Este ebook sobre <strong>${escapeHtml(
+          topic
+        )}</strong> ha sido generado como ejemplo. 
+        Aquí podrás ver cómo se verá el formato final antes de exportarlo a PDF. 
+        Completa, edita y mejora este contenido según tus necesidades.
+      </p>
+      <h2>Capítulo 1 · Fundamentos</h2>
+      <p>
+        Aquí podrías introducir los conceptos básicos, definiciones y contexto del tema.
+        Divide las ideas en párrafos cortos para una lectura más amigable, 
+        especialmente en dispositivos móviles.
+      </p>
+      <h2>Capítulo 2 · Estrategias prácticas</h2>
+      <ul>
+        <li>Punto 1 práctico relacionado con ${escapeHtml(topic)}</li>
+        <li>Punto 2 con un ejemplo concreto.</li>
+        <li>Punto 3 con una mini guía paso a paso.</li>
+      </ul>
+      <h2>Conclusión y próximos pasos</h2>
+      <p>
+        Cierra el ebook con una conclusión clara, un resumen de lo aprendido 
+        y un llamado a la acción (por ejemplo, aplicar una lista de tareas, 
+        seguir un calendario, o adquirir otro recurso premium de tu catálogo).
+      </p>
+    `;
   }
 
-  estadoEl.textContent = "Generando PDF, espera...";
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
 
-  const { jsPDF } = window.jspdf;
+  // -------------------------
+  // NUEVO EBOOK (reinicia contenido)
+  // -------------------------
+  newEbookBtn.addEventListener("click", () => {
+    if (!confirm("¿Seguro que quieres borrar el contenido actual y empezar otro ebook?")) {
+      return;
+    }
+    ebookTitleInput.value = "";
+    ebookTopicInput.value = "";
+    extraInstructionsInput.value = "";
+    depthLevelSelect.value = "basico";
+    generationStatus.textContent = "";
+    ebookEditor.innerHTML = `
+      <h1>Título del ebook</h1>
+      <p>
+        Escribe o genera tu contenido aquí. Este texto se utilizará tal
+        cual para el PDF final.
+      </p>
+    `;
+  });
 
-  // FORMATO PDF
-  const format = document.getElementById("pdf-size").value || "a4";
-  let pdfOpt;
+  // -------------------------
+  // EXPORTAR PDF
+  // -------------------------
+  exportPdfBtn.addEventListener("click", async () => {
+    const title = (ebookTitleInput.value || "ebook").trim();
+    const safeTitle = title
+      .toLowerCase()
+      .replace(/[^a-z0-9áéíóúüñ\s]/gi, "")
+      .replace(/\s+/g, "-");
 
-  if (format === "letter") pdfOpt = { unit: "mm", format: "letter" };
-  else if (format === "kdp6x9") pdfOpt = { unit: "mm", format: [152, 229] };
-  else pdfOpt = { unit: "mm", format: "a4" };
-
-  const pdf = new jsPDF({ orientation: "p", ...pdfOpt });
-
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-  const margin = 12;
-  const usableWidth = pageWidth - margin * 2;
-
-  let first = true;
-
-  for (let p of pages) {
-    // Render page to canvas
-    const canvas = await html2canvas(p, {
-      scale: 3,
-      backgroundColor: "#ffffff",
-      useCORS: true
+    await window.pdfExporter.exportElementToPdf(ebookEditor, {
+      filename: `${safeTitle || "ebook"}.pdf`
     });
-
-    const imgData = canvas.toDataURL("image/jpeg", 0.85);
-    const imgWidth = usableWidth;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-    if (!first) pdf.addPage();
-    first = false;
-
-    pdf.addImage(imgData, "JPEG", margin, margin, imgWidth, imgHeight);
-  }
-
-  const tema = document.getElementById("tema").value.trim() || "ebook";
-  pdf.save(`${tema.replace(/\s+/g, "-").toLowerCase()}.pdf`);
-
-  estadoEl.textContent = "PDF generado correctamente.";
+  });
 });
