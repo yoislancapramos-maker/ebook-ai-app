@@ -1,58 +1,31 @@
-/* 
-  Golden Crystal UI
-  Modo claro por defecto, modo oscuro con .dark en <html>
-*/
-
-/* ============================
-   VARIABLES MODO CLARO
-============================ */
-
 :root {
-  --bg: #f9fafb;
-  --bg-elevated: rgba(255, 255, 255, 0.9);
-  --bg-glass: rgba(255, 255, 255, 0.75);
-  --border-soft: rgba(0, 0, 0, 0.08);
-  --text: #111827;
-  --text-muted: #6b7280;
-
-  --gold: #c5a253;
-  --gold-soft: #f6e7c1;
-  --gold-dark: #a97f2d;
-  --accent: #c5a253;
-
-  --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.18);
+  --bg: #0b0c10;
+  --bg-alt: #11131a;
+  --card-bg: #141824;
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --text-main: #f5f5f7;
+  --text-muted: #a3a3b5;
+  --accent: #f5d177;
+  --accent-strong: #ffd35b;
+  --accent-soft: rgba(245, 209, 119, 0.18);
+  --danger: #ff4b6a;
+  --success: #4caf50;
   --radius-lg: 18px;
-  --radius-md: 12px;
-  --radius-sm: 999px;
-
-  --font-title: "Playfair Display", system-ui, serif;
-  --font-body: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+  --radius-xl: 22px;
+  --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.45);
+  --transition-fast: 0.2s ease-out;
 }
 
-/* ============================
-   VARIABLES MODO OSCURO
-============================ */
-
-html.dark {
-  --bg: #050509;
-  --bg-elevated: rgba(17, 17, 25, 0.9);
-  --bg-glass: rgba(17, 17, 25, 0.85);
-  --border-soft: rgba(250, 250, 255, 0.18);
-  --text: #f9fafb;
-  --text-muted: #9ca3af;
-
-  --gold: #d4af37;
-  --gold-soft: #e8d4a2;
-  --gold-dark: #b8860b;
-  --accent: #d4af37;
-
-  --shadow-soft: 0 24px 60px rgba(0, 0, 0, 0.9);
+body.theme-light {
+  --bg: #f3f4f8;
+  --bg-alt: #ffffff;
+  --card-bg: #ffffff;
+  --border-subtle: rgba(15, 23, 42, 0.08);
+  --text-main: #111827;
+  --text-muted: #6b7280;
+  --accent-soft: rgba(245, 209, 119, 0.2);
+  --shadow-soft: 0 16px 40px rgba(15, 23, 42, 0.13);
 }
-
-/* ============================
-   RESET BÁSICO
-============================ */
 
 *,
 *::before,
@@ -60,46 +33,39 @@ html.dark {
   box-sizing: border-box;
 }
 
-html,
 body {
   margin: 0;
   padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: radial-gradient(circle at top, #1a1f2f 0, var(--bg) 45%);
+  color: var(--text-main);
 }
 
-body {
-  min-height: 100vh;
-  background: radial-gradient(circle at top, rgba(212, 175, 55, 0.16), transparent),
-    var(--bg);
-  color: var(--text);
-  font-family: var(--font-body);
-  -webkit-font-smoothing: antialiased;
+/* Layout general */
+
+.app-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 16px 40px;
 }
 
-/* ============================
-   CONTENEDOR PRINCIPAL
-============================ */
+/* HEADER */
 
-.app-shell {
-  max-width: 1120px;
-  margin: 18px auto;
-  padding: 16px;
-}
-
-/* ============================
-   TOPBAR
-============================ */
-
-.topbar {
+.app-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 12px 18px;
-  border-radius: var(--radius-lg);
-  background: var(--bg-glass);
-  border: 1px solid var(--border-soft);
-  box-shadow: var(--shadow-soft);
-  backdrop-filter: blur(14px);
+  align-items: center;
   margin-bottom: 16px;
+  padding: 12px 18px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, #1a1d29, #131623);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-soft);
+}
+
+body.theme-light .app-header {
+  background: linear-gradient(135deg, #ffffff, #f3f4ff);
 }
 
 .brand {
@@ -108,489 +74,292 @@ body {
   gap: 12px;
 }
 
-.brand-mark {
-  width: 36px;
-  height: 36px;
-  border-radius: 40%;
-  background: radial-gradient(circle at 30% 20%, #f6e7c1, #c5a253);
-  box-shadow: 0 0 12px rgba(212, 175, 55, 0.5);
+.brand-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 20%, #fff7d1, #f5b400);
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.55);
 }
 
-.brand-glyph {
-  color: #111827;
-  font-size: 18px;
-}
-
-.brand-text h1 {
-  font-family: var(--font-title);
+.brand h1 {
+  font-size: 1.2rem;
   margin: 0;
-  font-size: 20px;
 }
 
-.brand-text p {
+.brand-subtitle {
   margin: 0;
-  font-size: 13px;
+  font-size: 0.78rem;
   color: var(--text-muted);
 }
 
-.topbar-actions {
+.header-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-.icon-button {
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-soft);
-  background: transparent;
-  color: var(--text);
-  padding: 6px 10px;
+/* BOTONES */
+
+.btn {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
   cursor: pointer;
-  font-size: 16px;
-}
-
-/* ============================
-   TARJETA DE ACCESO
-============================ */
-
-.access-card {
-  margin-top: 14px;
-  margin-bottom: 14px;
-  padding: 18px;
-  border-radius: var(--radius-lg);
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-soft);
-  box-shadow: var(--shadow-soft);
-}
-
-.access-card h2 {
-  margin: 0 0 6px 0;
-  font-size: 18px;
-}
-
-.access-subtitle {
-  margin: 0 0 12px 0;
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-.access-grid {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-@media (max-width: 720px) {
-  .access-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.access-field label {
-  display: block;
-  font-size: 13px;
-  margin-bottom: 4px;
-  color: var(--text-muted);
-}
-
-.access-field select,
-.access-field input {
-  width: 100%;
-  padding: 9px 10px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-soft);
-  background: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
-}
-
-html.dark .access-field select,
-html.dark .access-field input {
-  background: rgba(5, 5, 9, 0.9);
-  color: var(--text);
-}
-
-.access-error {
-  margin-top: 6px;
-  font-size: 13px;
-  color: #ef4444;
-}
-
-/* ============================
-   BOTONES
-============================ */
-
-.primary-button {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 6px;
-  padding: 10px 16px;
-  border-radius: var(--radius-sm);
-  border: 1px solid transparent;
-  background: linear-gradient(135deg, var(--gold-soft), var(--gold));
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast),
+    background var(--transition-fast), color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn.primary {
+  background: linear-gradient(135deg, #ffd35b, #f5b400);
   color: #111827;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 14px;
-  box-shadow: 0 8px 18px rgba(212, 175, 55, 0.35);
+  box-shadow: 0 10px 25px rgba(255, 211, 91, 0.5);
 }
 
-.primary-button:hover {
-  filter: brightness(1.03);
-  transform: translateY(-0.5px);
+.btn.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(255, 211, 91, 0.65);
 }
 
-.ghost-button {
-  padding: 7px 12px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-soft);
+.btn.secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+body.theme-light .btn.secondary {
+  background: rgba(17, 24, 39, 0.03);
+  border-color: rgba(17, 24, 39, 0.12);
+}
+
+.btn.secondary:hover {
+  transform: translateY(-1px);
+}
+
+.btn.ghost {
   background: transparent;
-  color: var(--text);
-  cursor: pointer;
-  font-size: 13px;
+  color: var(--text-muted);
+  border: 1px dashed rgba(255, 255, 255, 0.25);
 }
 
-.ghost-button:hover {
-  background: rgba(0, 0, 0, 0.03);
+body.theme-light .btn.ghost {
+  border-color: rgba(15, 23, 42, 0.2);
 }
 
-.full-width {
-  width: 100%;
+.btn.ghost:hover {
+  color: var(--accent);
 }
 
-/* BOTÓN CAMBIAR PLAN — DORADO REAL */
-
-.gold-button-outline {
+.btn.outline {
   background: transparent;
-  border: 1px solid #d4af37;
-  color: #d4af37;
-  padding: 7px 14px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  border: 1px solid var(--accent);
+  color: var(--accent);
 }
 
-.gold-button-outline:hover {
-  background: #d4af37;
-  color: #000000;
-  box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+.btn.outline:hover {
+  background: var(--accent-soft);
 }
 
-.small-button {
-  font-size: 13px !important;
-  padding: 6px 12px !important;
+.btn.success {
+  background: var(--success);
+  color: #fff;
 }
 
-/* ============================
-   LAYOUT PRINCIPAL
-============================ */
+/* CARDS & FORM */
 
-.main {
-  display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.25fr);
-  gap: 14px;
-  margin-top: 6px;
-}
-
-@media (max-width: 960px) {
-  .main {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ============================
-   PANELES
-============================ */
-
-.panel {
-  border-radius: var(--radius-lg);
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-soft);
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius-xl);
+  padding: 16px 18px;
+  border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-soft);
-  padding: 16px 16px 18px;
 }
 
-.panel h2 {
-  margin: 0 0 6px 0;
-  font-size: 17px;
+.access-card {
+  margin-bottom: 16px;
 }
 
-.panel-subtitle {
-  margin: 0 0 12px 0;
-  font-size: 13px;
-  color: var(--text-muted);
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
 }
 
-/* Formulario */
-
-.panel-form label {
-  display: block;
-  font-size: 13px;
-  margin-top: 8px;
-  margin-bottom: 4px;
-  color: var(--text-muted);
-}
-
-.panel-form input,
-.panel-form select {
-  width: 100%;
-  padding: 9px 10px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-soft);
-  background: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
-}
-
-html.dark .panel-form input,
-html.dark .panel-form select {
-  background: rgba(5, 5, 9, 0.9);
-  color: var(--text);
-}
-
-.panel-form input:focus,
-.panel-form select:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-
-/* Estado */
-
-.status-text {
-  margin-top: 8px;
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-/* ============================
-   PANEL VISTA PREVIA
-============================ */
-
-.panel-preview {
+.form-control {
   display: flex;
   flex-direction: column;
-  min-height: 280px;
+  gap: 4px;
+  margin-bottom: 8px;
 }
 
-.preview-header {
+.form-control label {
+  font-size: 0.8rem;
+}
+
+.form-control input,
+.form-control select,
+.form-control textarea {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+  background: rgba(12, 16, 30, 0.9);
+  color: var(--text-main);
+  font-size: 0.85rem;
+}
+
+body.theme-light .form-control input,
+body.theme-light .form-control select,
+body.theme-light .form-control textarea {
+  background: #f9fafb;
+}
+
+.form-control textarea {
+  resize: vertical;
+}
+
+/* TEXT HELPERS */
+
+.muted {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.muted.tiny {
+  font-size: 0.72rem;
+}
+
+.error-text {
+  color: var(--danger);
+  font-size: 0.8rem;
+}
+
+/* MAIN LAYOUT */
+
+.app-main {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+  gap: 14px;
+}
+
+.sidebar {
+  align-self: flex-start;
+}
+
+.sidebar-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.access-actions {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* EDITOR */
+
+.editor-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.editor-toolbar {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 10px;
+  align-items: center;
+  gap: 8px;
 }
 
-.preview-actions {
+.editor-actions {
   display: flex;
   gap: 8px;
 }
 
-.ebook-preview {
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-soft);
-  background: var(--bg-glass);
-  backdrop-filter: blur(10px);
-  padding: 12px;
-  max-height: 70vh;
-  overflow-y: auto;
+.ebook-container {
+  margin-top: 6px;
+  padding: 10px;
+  border-radius: var(--radius-lg);
+  background: radial-gradient(circle at top left, var(--accent-soft), transparent);
+  border: 1px dashed var(--border-subtle);
+  max-height: calc(100vh - 220px);
+  overflow: auto;
 }
 
-/* ============================
-   SISTEMA DE PÁGINAS
-============================ */
-
-.pages-container {
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-  padding-bottom: 40px;
-}
-
-/* UNA SOLA DEFINICIÓN DE PÁGINA REAL */
-.ebook-page {
+/* El bloque que se manda al PDF */
+.ebook-editor {
   background: #ffffff;
-  border-radius: 14px;
-  padding: 28px 32px;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.12);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-
-  width: 100%;
-  max-width: 780px;
-  min-height: auto;
+  color: #111827;
   margin: 0 auto;
-  position: relative;
-}
-
-/* Asegurar que el contenido no se salga */
-.ebook-page * {
-  max-width: 100%;
-  box-sizing: border-box;
-  break-inside: avoid;
-}
-
-/* ============================
-   TIPOGRAFÍA INTERNA DEL EBOOK
-============================ */
-
-.ebook-page h1 {
-  font-family: var(--font-title);
-  font-size: 32px;
-  margin: 0 0 8px 0;
-}
-
-.ebook-page .subtitle {
-  font-size: 16px;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-}
-
-.ebook-page .author {
-  font-size: 13px;
-  color: var(--gold-dark);
-  margin-bottom: 22px;
-}
-
-.ebook-page h2 {
-  font-size: 22px;
-  margin-top: 26px;
-  margin-bottom: 6px;
-}
-
-.ebook-page h3 {
-  font-size: 18px;
-  margin-top: 16px;
-  margin-bottom: 4px;
-}
-
-.ebook-page p {
-  margin-bottom: 8px;
-  line-height: 1.7;
-  font-size: 14px;
-}
-
-.ebook-page ul,
-.ebook-page ol {
-  margin-left: 20px;
-  margin-bottom: 10px;
-}
-
-.ebook-page li {
-  margin-bottom: 4px;
-  font-size: 14px;
-}
-
-.ebook-page strong {
-  color: var(--gold-dark);
-}
-
-/* ============================
-   PLANTILLAS VISUALES
-============================ */
-
-/* MINIMAL PRO */
-
-.ebook-page.template-minimal {
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.16);
-}
-
-.ebook-page.template-minimal h1 {
-  font-size: 34px;
-}
-
-.ebook-page.template-minimal h2 {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.16);
-  padding-bottom: 4px;
-}
-
-/* BUSINESS BLUE */
-
-.ebook-page.template-business {
-  background: linear-gradient(to bottom right, #ffffff, #f1f5ff);
-  border-left: 6px solid #1e40af;
-  box-shadow: 0 14px 32px rgba(59, 130, 246, 0.2);
-}
-
-.ebook-page.template-business h1 {
-  color: #1e3a8a;
-  font-size: 32px;
-  font-weight: 800;
-}
-
-.ebook-page.template-business h2 {
-  color: #1d4ed8;
-}
-
-.ebook-page.template-business h3 {
-  color: #2563eb;
-}
-
-.ebook-page.template-business .author {
-  color: #1e40af;
-}
-
-/* CREATIVA FULL COLOR */
-
-.ebook-page.template-creative {
-  background: linear-gradient(135deg, #fff0f6, #f0f7ff, #fefce8);
-  border: 2px solid rgba(255, 0, 130, 0.25);
-  box-shadow: 0 16px 38px rgba(244, 63, 94, 0.3);
-}
-
-.ebook-page.template-creative h1 {
-  font-size: 34px;
-  background: linear-gradient(90deg, #d946ef, #6366f1, #0ea5e9);
-  -webkit-background-clip: text;
-  color: transparent;
-  font-weight: 800;
-}
-
-.ebook-page.template-creative .subtitle {
-  color: #db2777;
-}
-
-.ebook-page.template-creative .author {
-  color: #7c3aed;
-}
-
-/* ============================
-   BLOQUES ESPECIALES
-============================ */
-
-.ebook-page .highlight-box,
-.ebook-page .tip-box,
-.ebook-page .exercise-box {
+  padding: 32px 36px;
   border-radius: 10px;
-  padding: 10px 12px;
-  margin: 10px 0;
-  font-size: 13px;
+  max-width: 800px;
+  min-height: 600px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.35);
+  line-height: 1.5;
+  font-size: 0.95rem;
 }
 
-/* Idea clave */
-.ebook-page .highlight-box {
-  border-left: 3px solid var(--gold-dark);
-  background: rgba(248, 250, 252, 0.9);
+.ebook-editor h1,
+.ebook-editor h2,
+.ebook-editor h3 {
+  color: #111827;
 }
 
-/* Tip práctico */
-.ebook-page .tip-box {
-  border-left: 3px solid #22c55e;
-  background: rgba(220, 252, 231, 0.9);
+.ebook-editor h1 {
+  font-size: 1.6rem;
+  margin-top: 0;
 }
 
-/* Ejercicio */
-.ebook-page .exercise-box {
-  border-left: 3px solid #3b82f6;
-  background: rgba(219, 234, 254, 0.9);
+.ebook-editor h2 {
+  font-size: 1.3rem;
+  margin-top: 1.4rem;
 }
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+  .app-main {
+    grid-template-columns: 1fr;
+  }
+
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .header-actions {
+    align-self: flex-end;
+  }
+
+  .ebook-editor {
+    padding: 20px 18px;
+    min-height: 420px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .app-wrapper {
+    padding: 10px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+}
+
 
 
