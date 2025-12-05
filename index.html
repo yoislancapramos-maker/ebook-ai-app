@@ -5,78 +5,101 @@
   <title>Golden Ebook Studio</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Estilos -->
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Librerías para PDF -->
+  <!-- Librerías de PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
-<body class="theme-light">
-  <div class="app-wrapper">
+<body>
+  <div class="app-shell">
+
+    <!-- HEADER -->
     <header class="app-header">
       <div class="brand">
-        <span class="brand-logo">✨</span>
+        <div class="brand-logo">✨</div>
         <div>
           <h1>Golden Ebook Studio</h1>
-          <p class="brand-subtitle">Genera ebooks listos para vender en Hotmart</p>
+          <p class="brand-subtitle">Crea ebooks premium listos para vender en Hotmart</p>
         </div>
       </div>
 
       <div class="header-actions">
-        <button id="themeToggleBtn" class="btn secondary">
-          🌙 Modo oscuro
-        </button>
-        <button id="changePlanBtn" class="btn ghost" style="display:none;">
-          Cambiar plan
+        <!-- Futuro: login por correo / Google -->
+        <button class="btn ghost" id="fakeLoginBtn" type="button">
+          Próximamente: Acceso con cuenta
         </button>
       </div>
     </header>
 
-    <!-- PANEL DE ACCESO (NOMBRE + CLAVE PLAN) -->
-    <section id="accessPanel" class="card access-card">
-      <h2>Acceso a la herramienta</h2>
-      <p class="muted">
-        Ingresa tu nombre y la clave de suscripción para usar el generador de ebooks.
-      </p>
+    <!-- DASHBOARD / PORTADA -->
+    <section id="accessPanel" class="dashboard card">
+      <div class="dashboard-main">
+        <div class="dashboard-info">
+          <h2>Acceso a la herramienta</h2>
+          <p class="muted">
+            Ingresa tu nombre y tu clave de suscripción para usar el generador de ebooks.
+          </p>
 
-      <div class="form-grid">
-        <div class="form-control">
-          <label for="userName">Tu nombre</label>
-          <input type="text" id="userName" placeholder="Escribe tu nombre" />
+          <div class="form-grid">
+            <div class="form-control">
+              <label for="userName">Tu nombre</label>
+              <input type="text" id="userName" placeholder="Ej: Ana, Carlos..." />
+            </div>
+
+            <div class="form-control">
+              <label for="planSelect">Plan</label>
+              <select id="planSelect">
+                <option value="basico">Plan Básico</option>
+                <option value="pro">Plan Pro</option>
+              </select>
+            </div>
+
+            <div class="form-control">
+              <label for="accessKey">Clave de suscripción</label>
+              <input
+                type="password"
+                id="accessKey"
+                placeholder="Ej: BASICO-2025 o PRO-2025"
+              />
+            </div>
+          </div>
+
+          <div class="access-actions">
+            <button id="enterAppBtn" class="btn primary" type="button">
+              Entrar al generador
+            </button>
+            <p id="accessError" class="error-text" style="display:none;"></p>
+          </div>
+
+          <p class="muted tiny">
+            Más adelante aquí podrás iniciar sesión con correo o Google, y ver tu historial de
+            ebooks generados.
+          </p>
         </div>
 
-        <div class="form-control">
-          <label for="planSelect">Plan</label>
-          <select id="planSelect">
-            <option value="basico">Plan Básico</option>
-            <option value="pro">Plan Pro</option>
-          </select>
+        <div class="dashboard-preview card-soft">
+          <h3>Tus ebooks generados</h3>
+          <p class="muted">
+            Próximamente, aquí verás una lista de tus ebooks creados para descargarlos,
+            editarlos o usar como plantillas.
+          </p>
+          <ul class="muted tiny">
+            <li>Ver detalles de cada ebook</li>
+            <li>Volver a abrir en el generador</li>
+            <li>Descargar de nuevo en PDF</li>
+          </ul>
         </div>
-
-        <div class="form-control">
-          <label for="accessKey">Clave de suscripción</label>
-          <input
-            type="password"
-            id="accessKey"
-            placeholder="Ej: BASICO-2025 o PRO-2025"
-          />
-        </div>
-      </div>
-
-      <div class="access-actions">
-        <button id="enterAppBtn" class="btn primary">Entrar al generador</button>
-        <p id="accessError" class="error-text" style="display:none;">
-          Clave incorrecta. Verifica tu suscripción.
-        </p>
       </div>
     </section>
 
-    <!-- PANEL PRINCIPAL DE LA HERRAMIENTA -->
+    <!-- GENERADOR PRINCIPAL -->
     <main id="appMain" class="app-main" style="display:none;">
       <section class="sidebar card">
-        <h2>Configuración del ebook</h2>
-        <p class="muted" id="currentPlanLabel"></p>
+        <div class="sidebar-header">
+          <h2>Configurar ebook</h2>
+          <p id="currentUserPlan" class="muted tiny"></p>
+        </div>
 
         <div class="form-control">
           <label for="ebookTitle">Título del ebook</label>
@@ -88,7 +111,7 @@
         </div>
 
         <div class="form-control">
-          <label for="ebookTopic">Tema / Nicho</label>
+          <label for="ebookTopic">Nicho / Tema principal</label>
           <input
             type="text"
             id="ebookTopic"
@@ -97,32 +120,88 @@
         </div>
 
         <div class="form-control">
-          <label for="depthLevel">Nivel de profundidad (longitud)</label>
-          <select id="depthLevel">
-            <option value="basico">Básico (ebook corto)</option>
-            <option value="medio">Medio (ebook estándar)</option>
-            <option value="alto">Alto (ebook más extenso)</option>
+          <label for="ebookAudience">Público objetivo</label>
+          <input
+            type="text"
+            id="ebookAudience"
+            placeholder="Ej: Madres ocupadas, emprendedores, estudiantes..."
+          />
+        </div>
+
+        <div class="form-grid">
+          <div class="form-control">
+            <label for="chaptersCount">Número de capítulos</label>
+            <input
+              type="number"
+              id="chaptersCount"
+              min="1"
+              max="30"
+              value="8"
+            />
+          </div>
+
+          <div class="form-control">
+            <label for="pagesCount">Páginas aproximadas</label>
+            <input
+              type="number"
+              id="pagesCount"
+              min="5"
+              max="200"
+              value="40"
+            />
+          </div>
+        </div>
+
+        <div class="form-control">
+          <label for="toneSelect">Tono del ebook</label>
+          <select id="toneSelect">
+            <option value="neutral">Neutral y claro</option>
+            <option value="profesional">Profesional</option>
+            <option value="cercano">Cercano y conversacional</option>
+            <option value="divertido">Divertido</option>
+            <option value="inspirador">Inspirador / motivador</option>
+          </select>
+        </div>
+
+        <div class="form-control">
+          <label for="languageSelect">Idioma</label>
+          <select id="languageSelect">
+            <option value="es">Español</option>
+            <option value="en">Inglés</option>
+          </select>
+        </div>
+
+        <div class="form-control">
+          <label for="templateSelect">Plantilla visual</label>
+          <select id="templateSelect">
+            <option value="clasic">Clásica dorada</option>
+            <option value="minimal">Minimal blanca</option>
+            <option value="dark">Oscura elegante</option>
+            <option value="colorful">Creativa por nicho</option>
           </select>
           <p class="muted tiny">
-            La IA traducirá esto a una cantidad aproximada de palabras/páginas.
+            Cada plantilla cambia colores, estilos de títulos y sensación visual del ebook.
           </p>
         </div>
 
         <div class="form-control">
-          <label for="extraInstructions">Instrucciones adicionales</label>
+          <label for="extraInstructions">Notas para la IA</label>
           <textarea
             id="extraInstructions"
             rows="4"
-            placeholder="Ej: Tono motivador, ejemplos reales, incluir checklist al final..."
+            placeholder="Ej: Incluir ejemplos reales, agregar checklist al final, estructurar cada capítulo con introducción, desarrollo y resumen..."
           ></textarea>
         </div>
 
         <div class="sidebar-actions">
-          <button id="generateEbookBtn" class="btn primary">
+          <button id="generateEbookBtn" class="btn primary" type="button">
             Generar ebook con IA
           </button>
-          <button id="newEbookBtn" class="btn outline">
+          <button id="newEbookBtn" class="btn secondary" type="button">
             Nuevo ebook
+          </button>
+          <button id="backToDashboardBtn" class="btn ghost" type="button">
+            Volver al dashboard
           </button>
         </div>
 
@@ -131,37 +210,38 @@
 
       <section class="editor-area">
         <div class="editor-toolbar">
-          <h2>Contenido del ebook</h2>
+          <div>
+            <h2>Editor del ebook</h2>
+            <p class="muted tiny">
+              Edita libremente el contenido. Lo que ves aquí será lo que se exporte al PDF.
+            </p>
+            <p id="currentTemplateLabel" class="muted tiny"></p>
+          </div>
           <div class="editor-actions">
-            <button id="exportPdfBtn" class="btn success">
+            <button id="exportPdfBtn" class="btn success" type="button">
               📄 Descargar PDF
             </button>
           </div>
         </div>
 
-        <p class="muted tiny">
-          Todo lo que aparece en este editor se enviará al PDF. Puedes editar el texto manualmente antes de exportar.
-        </p>
-
-        <!-- CONTENEDOR DEL EBOOK (LO QUE VEZ AQUÍ SE VA AL PDF) -->
         <div id="ebookContainer" class="ebook-container">
-          <div id="ebookEditor" class="ebook-editor" contenteditable="true">
+          <div id="ebookEditor" class="ebook-editor template-clasic" contenteditable="true">
             <h1>Título del ebook</h1>
             <p>
-              Escribe o genera tu contenido aquí. Este texto se utilizará tal
-              cual para el PDF final.
+              Escribe o genera tu contenido aquí. Este texto se utilizará tal cual para el PDF final.
             </p>
           </div>
         </div>
       </section>
     </main>
+
   </div>
 
-  <!-- Scripts de la app -->
   <script src="pdf.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
+
 
 
 
