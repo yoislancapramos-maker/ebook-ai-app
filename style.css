@@ -11,13 +11,11 @@
   --text-dark: #111827;
   --text-muted: #9ca3af;
   --error: #ff4b6a;
-  --success: #16a34a;
   --radius-lg: 18px;
   --radius-xl: 22px;
   --shadow-soft: 0 22px 55px rgba(0, 0, 0, 0.55);
   --shadow-gold: 0 0 25px rgba(245, 198, 84, 0.7);
   --transition-fast: 0.2s ease-out;
-  --transition-medium: 0.3s ease-out;
 }
 
 *,
@@ -52,7 +50,11 @@ body {
   align-items: center;
   border-radius: var(--radius-xl);
   padding: 12px 18px;
-  background: linear-gradient(135deg, rgba(12, 10, 18, 0.95), rgba(25, 19, 40, 0.96));
+  background: linear-gradient(
+    135deg,
+    rgba(12, 10, 18, 0.95),
+    rgba(25, 19, 40, 0.96)
+  );
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: var(--shadow-soft);
   margin-bottom: 14px;
@@ -93,23 +95,30 @@ body {
   gap: 8px;
 }
 
-/* BOTONES DORADO CRISTAL */
+/* BOTONES DORADO CRISTAL – ESTILO ÚNICO PARA TODOS */
 
-.btn {
+.btn,
+.btn.primary,
+.btn.secondary,
+.btn.ghost,
+.btn.success {
   border-radius: 999px;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.35);
   padding: 8px 16px;
   font-size: 0.85rem;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   cursor: pointer;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast),
-    background var(--transition-fast), color var(--transition-fast),
-    border-color var(--transition-fast);
+  background: linear-gradient(135deg, #ffe9a3, #f5c654, #f5a623);
+  color: #1f2933 !important;
+  box-shadow: 0 12px 30px rgba(245, 198, 84, 0.65);
   position: relative;
   overflow: hidden;
   white-space: nowrap;
+  transition: transform var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .btn::before {
@@ -132,28 +141,10 @@ body {
   transform: translateX(220%);
 }
 
-
-
-.btn.primary:hover {
+.btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 16px 40px rgba(245, 198, 84, 0.85);
+  box-shadow: 0 16px 40px rgba(245, 198, 84, 0.9);
 }
-
-
-
-.btn.secondary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.65);
-}
-
-
-
-.btn.ghost:hover {
-  background: rgba(0, 0, 0, 0.32);
-  transform: translateY(-1px);
-}
-
-
 
 /* CARDS & TEXTOS */
 
@@ -170,13 +161,6 @@ body {
   color: var(--text-main);
 }
 
-.card-soft {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: var(--radius-lg);
-  padding: 12px 14px;
-  border: 1px dashed rgba(245, 198, 84, 0.6);
-}
-
 .muted {
   color: var(--text-muted);
   font-size: 0.85rem;
@@ -187,7 +171,7 @@ body {
 }
 
 .error-text {
-  color: var(--error);
+  color: #ff4b6a;
   font-size: 0.8rem;
 }
 
@@ -195,7 +179,7 @@ body {
 
 .dashboard-main {
   display: grid;
-  grid-template-columns: minmax(260px, 1.2fr) minmax(220px, 1fr);
+  grid-template-columns: minmax(260px, 1.2fr);
   gap: 14px;
   align-items: flex-start;
 }
@@ -285,7 +269,7 @@ body {
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .editor-actions {
@@ -303,7 +287,7 @@ body {
   overflow: auto;
 }
 
-/* EDITOR INTERIOR (EL QUE VA AL PDF) */
+/* EDITOR INTERIOR (LO QUE VA AL PDF) */
 
 .ebook-editor {
   background: #ffffff;
@@ -318,27 +302,39 @@ body {
   font-size: 0.98rem;
 }
 
-/* Plantillas visuales */
-
+/* Títulos dentro del ebook */
 .ebook-editor h1,
 .ebook-editor h2,
 .ebook-editor h3 {
   color: #111827;
 }
 
-/* Clásica dorada */
+/* FIGURAS DE IMAGEN DENTRO DEL EBOOK */
+
+.ebook-figure {
+  margin: 16px 0;
+  text-align: center;
+}
+
+.ebook-figure img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.35);
+}
+
+/* Plantillas visuales */
+
 .template-clasic {
   border-top: 5px solid #f5c654;
   border-bottom: 2px solid #f5a623;
 }
 
-/* Minimal blanca */
 .template-minimal {
   border: 1px solid #e5e7eb;
   box-shadow: 0 8px 30px rgba(148, 163, 184, 0.35);
 }
 
-/* Oscura elegante */
 .template-dark {
   background: #0f172a;
   color: #e5e7eb;
@@ -349,7 +345,6 @@ body {
   color: #e5e7eb;
 }
 
-/* Creativa por nicho */
 .template-colorful {
   border-radius: 20px;
   background: linear-gradient(135deg, #ecfeff, #eff6ff);
@@ -392,11 +387,12 @@ body {
   .ebook-editor {
     padding: 18px 16px;
     min-height: 420px;
-    font-size: 1.08rem; /* aún más legible en móvil */
+    font-size: 1.08rem;
     line-height: 1.7;
   }
 }
 
+/* MODO CLARO */
 
 body.theme-light {
   background: radial-gradient(circle at top, #f9fafb 0, #e5e7eb 55%);
@@ -417,46 +413,6 @@ body.theme-light .ebook-editor {
   background: #ffffff;
   color: #111827;
 }
-
-/* BOTONES UNIVERSALES DORADOS */
-.btn {
-  background: linear-gradient(135deg, #ffe9a3, #f5c654, #f5a623);
-  color: #1f2933 !important;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 0 12px 30px rgba(245, 198, 84, 0.65);
-}
-
-.btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 16px 40px rgba(245, 198, 84, 0.9);
-}
-
-/* ESTILO ÚNICO PARA TODOS LOS BOTONES */
-.btn,
-.btn.primary,
-.btn.secondary,
-.btn.ghost,
-.btn.success {
-  background: linear-gradient(135deg, #ffe9a3, #f5c654, #f5a623);
-  color: #1f2933 !important;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  padding: 8px 16px;
-  font-size: 0.85rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  cursor: pointer;
-  box-shadow: 0 12px 30px rgba(245, 198, 84, 0.65);
-  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
-}
-
-.btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 16px 40px rgba(245, 198, 84, 0.9);
-}
-
 
 
 
