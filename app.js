@@ -5,10 +5,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ----- MODO OSCURO / CLARO -----
 const themeToggleBtn = document.getElementById("themeToggleBtn");
+const themeIcon = document.getElementById("themeIcon");
 
 themeToggleBtn.addEventListener("click", () => {
-  document.body.classList.toggle("theme-light");
+  const isLight = document.body.classList.toggle("theme-light");
+  themeIcon.textContent = isLight ? "☀️" : "🌙";
 });
+
 
   // DASHBOARD / ACCESO
   const accessPanel = document.getElementById("accessPanel");
@@ -297,12 +300,8 @@ themeToggleBtn.addEventListener("click", () => {
     currentTemplateLabel.textContent = "";
 
     generationStatus.textContent = "";
-    ebookEditor.innerHTML = `
-      <h1>Título del ebook</h1>
-      <p>
-        Escribe o genera tu contenido aquí. Este texto se utilizará tal cual para el PDF final.
-      </p>
-    `;
+   ebookEditor.innerHTML = "";
+
   });
 
   // -----------------------
