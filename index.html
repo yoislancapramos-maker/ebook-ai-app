@@ -20,16 +20,19 @@
         <div class="brand-logo">✨</div>
         <div>
           <h1>Golden Ebook Studio</h1>
-          <p class="brand-subtitle">Crea ebooks premium listos para vender en Hotmart</p>
-        </div>
+          <p class="brand-subtitle">Crea ebooks premium listos para publicar</p>
+       </div>
       </div>
 
       <div class="header-actions">
-        <!-- Futuro: login por correo / Google -->
-        <button class="btn ghost" id="fakeLoginBtn" type="button">
-          Próximamente: Acceso con cuenta
-        </button>
-      </div>
+  <button id="themeToggleBtn" class="btn secondary" type="button">
+    Modo oscuro / claro
+  </button>
+  <button class="btn ghost" id="fakeLoginBtn" type="button">
+    Próximamente: Acceso con cuenta
+  </button>
+</div>
+
     </header>
 
     <!-- DASHBOARD / PORTADA -->
@@ -210,21 +213,17 @@
 
       <section class="editor-area">
         <div class="editor-toolbar">
-          <div>
-            <h2>Editor del ebook</h2>
-            <p class="muted tiny">
-              Edita libremente el contenido. Lo que ves aquí será lo que se exporte al PDF.
-            </p>
-            <p id="currentTemplateLabel" class="muted tiny"></p>
-          </div>
-          <div class="editor-actions">
-            <button id="exportPdfBtn" class="btn success" type="button">
-              📄 Descargar PDF
-            </button>
-          </div>
-        </div>
+  <div>
+    <h2>Editor del ebook</h2>
+  </div>
+  <div class="editor-actions">
+    <button id="exportPdfBtn" class="btn success" type="button">
+      📄 Descargar PDF
+    </button>
+  </div>
+</div>
 
-        <div id="ebookContainer" class="ebook-container">
+          <div id="ebookContainer" class="ebook-container">
           <div id="ebookEditor" class="ebook-editor template-clasic" contenteditable="true">
             <h1>Título del ebook</h1>
             <p>
