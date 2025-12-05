@@ -123,72 +123,75 @@ document.addEventListener("DOMContentLoaded", () => {
   // GENERAR EBOOK (IA / EJEMPLO)
   // -----------------------
   generateEbookBtn.addEventListener("click", async () => {
-    const title = (ebookTitleInput.value || "").trim();
-    const topic = (ebookTopicInput.value || "").trim();
-    const audience = (ebookAudienceInput.value || "").trim();
-    const chaptersCount = parseInt(chaptersCountInput.value || "0", 10);
-    const pagesCount = parseInt(pagesCountInput.value || "0", 10);
-    const tone = toneSelect.value;
-    const language = languageSelect.value;
-    const extra = (extraInstructionsInput.value || "").trim();
-    const template = templateSelect.value;
+  const title = (ebookTitleInput.value || "").trim();
+  const topic = (ebookTopicInput.value || "").trim();
+  const audience = (ebookAudienceInput.value || "").trim();
+  const chaptersCount = parseInt(chaptersCountInput.value || "0", 10);
+  const pagesCount = parseInt(pagesCountInput.value || "0", 10);
+  const tone = toneSelect.value;
+  const language = languageSelect.value;
+  const extra = (extraInstructionsInput.value || "").trim();
+  const template = templateSelect.value;
 
-    if (!title) {
-      alert("Escribe un título para el ebook.");
+  if (!title) {
+    alert("Escribe un título para el ebook.");
+    return;
+  }
+  if (!chaptersCount || chaptersCount < 1) {
+    alert("Indica la cantidad de capítulos.");
+    return;
+  }
+
+  const payload = {
+    title,
+    topic,
+    audience,
+    chaptersCount,
+    pagesCount,
+    tone,
+    language,
+    extra,
+    template,
+    plan: currentPlan || "basico",
+  };
+
+  generationStatus.textContent = "Generando ebook con IA, esto puede tardar unos segundos...";
+  generateEbookBtn.disabled = true;
+
+  try {
+    const response = await fetch("/api/generate-content", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error("Error en la API:", errorData);
+      generationStatus.textContent =
+        "Error al generar el ebook. Revisa tu backend o la consola.";
       return;
     }
-    if (!topic) {
-      alert("Escribe el nicho o tema principal.");
-      return;
-    }
-    if (!chaptersCount || chaptersCount < 1) {
-      alert("Indica la cantidad de capítulos.");
+
+    const data = await response.json();
+    if (!data || !data.html) {
+      generationStatus.textContent =
+        "La respuesta de la IA no tiene contenido HTML.";
       return;
     }
 
-    const payload = {
-      title,
-      topic,
-      audience,
-      chaptersCount,
-      pagesCount,
-      tone,
-      language,
-      extra,
-      template,
-      plan: currentPlan || "basico"
-    };
-
+    ebookEditor.innerHTML = data.html;
     generationStatus.textContent =
-      "Generando ebook con IA... Este es solo un ejemplo local mientras conectas tu backend.";
-    generateEbookBtn.disabled = true;
+      "Ebook generado. Puedes editarlo y luego descargar el PDF.";
+  } catch (error) {
+    console.error("Error generando ebook:", error);
+    generationStatus.textContent =
+      "Ocurrió un error al generar el ebook. Revisa la consola.";
+  } finally {
+    generateEbookBtn.disabled = false;
+  }
+});
 
-    try {
-      // Aquí conectarías tu backend real:
-      //
-      // const response = await fetch("/api/generate-content", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(payload)
-      // });
-      // const data = await response.json();
-      // const generatedHtml = data.html; // o data.content
-      // ebookEditor.innerHTML = generatedHtml;
-
-      // Mientras tanto, usamos un generador de ejemplo
-      const exampleHtml = buildExampleEbook(payload);
-      ebookEditor.innerHTML = exampleHtml;
-
-      generationStatus.textContent =
-        "Ebook generado. Revisa, edita y luego descarga el PDF.";
-    } catch (error) {
-      console.error("Error generando ebook:", error);
-      generationStatus.textContent =
-        "Ocurrió un error al generar el ebook. Revisa la consola.";
-    } finally {
-      generateEbookBtn.disabled = false;
-    }
-  });
 
   function buildExampleEbook(config) {
     const {
