@@ -1,23 +1,30 @@
 // /api/generate-content.js
-// Versión compatible con Vercel (CommonJS + chat.completions)
-// Usa gpt-4.1-mini para texto y gpt-image-1 para imágenes (base64)
+// Serverless function para Vercel (Node) sin dependencias externas.
+// Usa fetch para llamar a la API de OpenAI.
 
-const OpenAI = require("openai");
-
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 module.exports = async function handler(req, res) {
+  // Habilitar JSON siempre
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Método no permitido" });
   }
 
+  if (!OPENAI_API_KEY) {
+    return res
+      .status(500)
+      .json({ error: "Falta OPENAI_API_KEY en las variables de entorno." });
+  }
+
   try {
+    const body = await readJsonBody(req);
+
     const {
       title,
-      topic, // Marca / Autor
+      topic,
       audience,
       chaptersCount,
       pagesCount,
@@ -26,7 +33,7 @@ module.exports = async function handler(req, res) {
       extra,
       template,
       plan,
-    } = req.body || {};
+    } = body || {};
 
     if (!title) {
       return res.status(400).json({ error: "Falta el título del ebook." });
@@ -38,20 +45,19 @@ module.exports = async function handler(req, res) {
 
     const chapters = clampInt(chaptersCount, 1, 12);
     const pages = clampInt(pagesCount, 5, 120);
-
     const toneLabel = mapTone(tone);
     const langCode = language === "en" ? "en" : "es";
 
     const maxTokens = Math.min(pages * 120, 9000);
 
-    const systemInstructions = buildSystemInstructions(
+    const systemPrompt = buildSystemInstructions(
       chapters,
       toneLabel,
       langCode,
       template
     );
 
-    const userConfigText = buildUserConfigSummary({
+    const userPrompt = buildUserConfigSummary({
       title: safeTitle,
       topic: safeTopic,
       audience: safeAudience,
@@ -64,33 +70,24 @@ module.exports = async function handler(req, res) {
       plan,
     });
 
-    // 1) TEXTO HTML
-    const completion = await client.chat.completions.create({
-      model: "gpt-4.1-mini",
-      messages: [
-        { role: "system", content: systemInstructions },
-        { role: "user", content: userConfigText },
-      ],
-      max_tokens: maxTokens,
-      temperature: 0.85,
+    // 1) TEXTO
+    const chatRes = await callOpenAIChat({
+      system: systemPrompt,
+      user: userPrompt,
+      maxTokens,
     });
 
-    const html = extractTextFromCompletion(completion);
-
+    let html = (chatRes || "").trim();
     if (!html) {
       return res
         .status(500)
         .json({ error: "La IA no devolvió contenido HTML." });
     }
 
-    let finalHtml = html;
-
     // 2) PLACEHOLDERS DE IMAGEN
-    const placeholders = collectImagePlaceholders(finalHtml, chapters);
-
+    const placeholders = collectImagePlaceholders(html, chapters);
     if (placeholders.length === 0) {
-      // No hay marcadores de imagen, devolvemos solo texto
-      return res.status(200).json({ html: finalHtml });
+      return res.status(200).json({ html });
     }
 
     // 3) IMÁGENES POR CAPÍTULO (2 por capítulo)
@@ -98,7 +95,7 @@ module.exports = async function handler(req, res) {
       const chapterMarkers = placeholders.filter((p) => p.chapter === ch);
       if (chapterMarkers.length === 0) continue;
 
-      const imagePromptBase = buildImagePrompt({
+      const imagePrompt = buildImagePrompt({
         title: safeTitle,
         topic: safeTopic,
         audience: safeAudience,
@@ -106,40 +103,31 @@ module.exports = async function handler(req, res) {
         langCode,
       });
 
-      const imgResponse = await client.images.generate({
-        model: "gpt-image-1",
-        prompt: imagePromptBase,
-        n: 2,
-        size: "1024x1024",
-      });
-
-      const imagesB64 = (imgResponse.data || []).map((d) => d.b64_json);
+      const imagesB64 = await callOpenAIImages(imagePrompt, 2);
 
       chapterMarkers.forEach((marker, idx) => {
         const b64 = imagesB64[idx] || imagesB64[0];
         if (!b64) return;
-
         const figHtml = buildFigureHtml({
           base64: b64,
           chapterNumber: ch,
           slot: marker.slot,
           langCode,
         });
-
-        finalHtml = finalHtml.replace(marker.marker, figHtml);
+        html = html.replace(marker.marker, figHtml);
       });
     }
 
-    return res.status(200).json({ html: finalHtml });
-  } catch (error) {
-    console.error("Error en /api/generate-content:", error);
+    return res.status(200).json({ html });
+  } catch (err) {
+    console.error("Error en /api/generate-content:", err);
     return res.status(500).json({
-      error: "Error generando el ebook. Revisa la consola del servidor.",
+      error: "Error generando el ebook. Revisa los logs del servidor.",
     });
   }
 };
 
-// -------------------- Helpers --------------------
+// ----------- Helpers básicos -----------
 
 function clampInt(value, min, max) {
   const n = parseInt(value, 10);
@@ -162,27 +150,22 @@ function mapTone(tone) {
   }
 }
 
-function extractTextFromCompletion(completion) {
+async function readJsonBody(req) {
+  if (req.body && typeof req.body === "object") return req.body;
+
+  const chunks = [];
+  for await (const chunk of req) {
+    chunks.push(chunk);
+  }
+  const raw = Buffer.concat(chunks).toString("utf8") || "{}";
   try {
-    const choice = completion.choices && completion.choices[0];
-    if (!choice || !choice.message) return "";
-
-    const content = choice.message.content;
-
-    if (typeof content === "string") return content;
-
-    if (Array.isArray(content)) {
-      return content
-        .map((part) => (typeof part === "string" ? part : part.text || ""))
-        .join("");
-    }
-
-    return String(content || "");
-  } catch (e) {
-    console.error("Error extrayendo texto:", e);
-    return "";
+    return JSON.parse(raw);
+  } catch {
+    return {};
   }
 }
+
+// ----------- Prompts -----------
 
 function buildSystemInstructions(chapters, toneLabel, langCode, template) {
   const langName = langCode === "en" ? "inglés" : "español";
@@ -197,33 +180,33 @@ function buildSystemInstructions(chapters, toneLabel, langCode, template) {
       : "Estilo visual clásico dorado, elegante, como un libro premium.";
 
   return `
-Eres un ghostwriter experto en ebooks premium. 
+Eres un ghostwriter experto en ebooks premium para creadores y lanzamientos digitales.
 Escribe SIEMPRE en ${langName}, con un tono ${toneLabel}.
-Tu tarea es devolver SOLO el contenido del ebook en HTML (sin <html>, <head>, <body>).
+Devuelve SOLO el contenido del ebook en HTML (sin <html>, <head> ni <body>).
 
 Estructura:
 
 - <h1> para el título del ebook.
 - Introducción: <h2>Introducción</h2> + varios párrafos útiles.
 - Para cada capítulo del 1 al ${chapters}:
-  - <h2>Capítulo X: Título...</h2>
+  - <h2>Capítulo X: Título del capítulo...</h2>
   - Inmediatamente debajo, inserta EXACTAMENTE estos comentarios HTML como marcadores de imagen:
     <!--IMAGE_CHX_SLOT1-->
     <!--IMAGE_CHX_SLOT2-->
     (cambia X por el número de capítulo)
-  - Luego, varios párrafos con contenido real (400-600 palabras por capítulo), listas y ejemplos.
-- Conclusión: <h2>Conclusión</h2> bien desarrollada.
+  - Luego, desarrolla el capítulo con varios párrafos (400-600 palabras), listas y ejemplos.
+- Conclusión: <h2>Conclusión</h2> bien desarrollada y accionable.
 
 Reglas:
 
-- NO escribas frases tipo "aquí va el contenido", escribe contenido real y útil.
-- Evita repetir siempre la misma frase en todos los capítulos.
-- Usa listas <ul><li>...</li></ul> cuando tenga sentido.
+- No escribas frases tipo "aquí va el contenido...". Escribe contenido REAL y útil.
+- Usa ejemplos, pasos, listas <ul><li>...</li></ul>, resúmenes al final de los capítulos.
+- Evita repetir exactamente las mismas frases en todos los capítulos.
 - Puedes usar <h3> como subtítulos internos.
-- El estilo debe sentirse como un ebook premium por el que el lector ha pagado.
+- El estilo debe sentirse como un ebook premium por el que el lector pagó.
 
 Ten en mente el enfoque visual: ${templateHint}
-Devuelve ÚNICAMENTE el HTML del ebook, con los comentarios <!--IMAGE_CHX_SLOTY--> donde corresponde.
+Devuelve ÚNICAMENTE el HTML del ebook, con los comentarios <!--IMAGE_CHX_SLOTY--> donde corresponda.
 `;
 }
 
@@ -242,24 +225,26 @@ function buildUserConfigSummary({
   const langName = langCode === "en" ? "Inglés" : "Español";
 
   return `
-DATOS DEL EBOOK
+DATOS DEL EBOOK A GENERAR
 
 Título: ${title}
 Marca o Autor: ${topic || "No especificado"}
 Público objetivo: ${audience || "No especificado"}
-Capítulos: ${chapters}
+Número de capítulos: ${chapters}
 Páginas aproximadas: ${pages}
-Tono: ${toneLabel}
+Tono deseado: ${toneLabel}
 Idioma: ${langName}
-Plantilla visual: ${template || "clasic"}
+Plantilla visual seleccionada: ${template || "clasic"}
 Plan del usuario: ${plan || "basico"}
 
-Notas extra del creador:
+Notas adicionales del creador:
 ${extra || "(sin notas adicionales)"}
 
-Usa todo esto para elegir qué temas, ejemplos y estructura tendrá el ebook.
+Usa esta información para decidir qué temas, estructura, ejemplos y profundidad tendrá el ebook.
 `;
 }
+
+// ----------- Manejo de placeholders -----------
 
 function collectImagePlaceholders(html, chapters) {
   const placeholders = [];
@@ -274,25 +259,27 @@ function collectImagePlaceholders(html, chapters) {
   return placeholders;
 }
 
+// ----------- Prompts de imagen + HTML de figure -----------
+
 function buildImagePrompt({ title, topic, audience, chapterNumber, langCode }) {
   const langPrefix =
     langCode === "en"
       ? "Illustration for an English ebook."
       : "Ilustración para un ebook en español.";
 
-  const base = `
+  return `
 ${langPrefix}
 Ebook title: "${title}".
 Brand/author: ${topic || "no especificado"}.
 Target audience: ${audience || "lectores interesados en el tema"}.
 Illustration for chapter ${chapterNumber} of the ebook.
 
-Clean, modern, soft gradients, subtle golden accents, style similar to Gamma/Canva.
-No big text inside the image, no logos or trademarks. 
-Use simple icons, objects or scenes that visually support the chapter.
-`;
+Estilo: limpio, moderno, con degradados suaves y acentos dorados sutiles,
+similar a presentaciones modernas tipo Gamma o Canva.
 
-  return base.trim();
+Sin texto grande dentro de la imagen, sin logos, sin marcas registradas.
+Iconos, personajes o escenas simples que apoyen visualmente el contenido del capítulo.
+`.trim();
 }
 
 function buildFigureHtml({ base64, chapterNumber, slot, langCode }) {
@@ -306,5 +293,63 @@ function buildFigureHtml({ base64, chapterNumber, slot, langCode }) {
   <img src="data:image/png;base64,${base64}" alt="${alt}" />
 </figure>
 `.trim();
+}
+
+// ----------- Llamadas a la API de OpenAI -----------
+
+async function callOpenAIChat({ system, user, maxTokens }) {
+  const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${OPENAI_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "gpt-4.1-mini",
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: user },
+      ],
+      max_tokens: maxTokens,
+      temperature: 0.85,
+    }),
+  });
+
+  if (!resp.ok) {
+    const errorBody = await resp.text().catch(() => "");
+    console.error("Error chat OpenAI:", resp.status, errorBody);
+    throw new Error("Error en la llamada a OpenAI Chat");
+  }
+
+  const data = await resp.json();
+  const choice = data.choices && data.choices[0];
+  return choice && choice.message && choice.message.content;
+}
+
+async function callOpenAIImages(prompt, n) {
+  const resp = await fetch("https://api.openai.com/v1/images/generations", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${OPENAI_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "gpt-image-1",
+      prompt,
+      n,
+      size: "1024x1024",
+      response_format: "b64_json",
+    }),
+  });
+
+  if (!resp.ok) {
+    const errorBody = await resp.text().catch(() => "");
+    console.error("Error imágenes OpenAI:", resp.status, errorBody);
+    // Si falla imágenes, devolvemos array vacío para no romper el ebook
+    return [];
+  }
+
+  const data = await resp.json();
+  return (data.data || []).map((d) => d.b64_json).filter(Boolean);
 }
 
