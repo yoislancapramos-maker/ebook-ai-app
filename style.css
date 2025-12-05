@@ -403,20 +403,18 @@ body {
 }
 
 @media (max-width: 600px) {
-  .app-shell {
-    padding: 10px;
-  }
-
-  .card {
-    padding: 12px;
+  body {
+    font-size: 17px;
   }
 
   .ebook-editor {
     padding: 18px 16px;
     min-height: 420px;
-    font-size: 1rem; /* más grande en móvil */
+    font-size: 1.08rem; /* aún más legible en móvil */
+    line-height: 1.7;
   }
 }
+
 
 body.theme-light {
   background: radial-gradient(circle at top, #f9fafb 0, #e5e7eb 55%);
