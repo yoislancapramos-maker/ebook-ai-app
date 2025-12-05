@@ -20,41 +20,38 @@
         <div class="brand-logo">✨</div>
         <div>
           <h1>Golden Ebook Studio</h1>
-          <p class="brand-subtitle">Crea ebooks premium listos para publicar</p>
-       </div>
+          <p class="brand-subtitle">Genera ebooks premium listos para publicar</p>
+        </div>
       </div>
 
       <div class="header-actions">
-  <button id="themeToggleBtn" class="btn" type="button">
-    <span id="themeIcon">🌙</span>
-  </button>
-  <button id="backToDashboardBtn" class="btn" type="button">
-    Volver al dashboard
-  </button>
-</div>
+        <button id="themeToggleBtn" class="btn">
+          <span id="themeIcon">🌙</span>
+        </button>
 
-
-  
-
+        <button id="backToDashboardBtn" class="btn">
+          Volver al dashboard
+        </button>
+      </div>
     </header>
 
-    <!-- DASHBOARD / PORTADA -->
+    <!-- PANEL DE ACCESO -->
     <section id="accessPanel" class="dashboard card">
       <div class="dashboard-main">
         <div class="dashboard-info">
           <h2>Acceso a la herramienta</h2>
           <p class="muted">
-            Ingresa tu nombre y tu clave de suscripción para usar el generador de ebooks.
+            Ingresa tu nombre y la clave de suscripción para generar ebooks.
           </p>
 
           <div class="form-grid">
             <div class="form-control">
-              <label for="userName">Tu nombre</label>
-              <input type="text" id="userName" placeholder="Ej: Ana, Carlos..." />
+              <label>Tu nombre</label>
+              <input id="userName" type="text" placeholder="Ej: Ana, Carlos..." />
             </div>
 
             <div class="form-control">
-              <label for="planSelect">Plan</label>
+              <label>Plan</label>
               <select id="planSelect">
                 <option value="basico">Plan Básico</option>
                 <option value="pro">Plan Pro</option>
@@ -62,40 +59,21 @@
             </div>
 
             <div class="form-control">
-              <label for="accessKey">Clave de suscripción</label>
-              <input
-                type="password"
-                id="accessKey"
-                placeholder="Ej: BASICO-2025 o PRO-2025"
-              />
+              <label>Clave de suscripción</label>
+              <input id="accessKey" type="password" placeholder="Ej: BASICO-2025 o PRO-2025" />
             </div>
           </div>
 
           <div class="access-actions">
-            <button id="enterAppBtn" class="btn primary" type="button">
-              Entrar al generador
-            </button>
+            <button id="enterAppBtn" class="btn">Entrar al generador</button>
             <p id="accessError" class="error-text" style="display:none;"></p>
           </div>
 
-         
-
-        <div class="dashboard-preview card-soft">
-          <h3>Tus ebooks generados</h3>
-          <p class="muted">
-            Próximamente, aquí verás una lista de tus ebooks creados para descargarlos,
-            editarlos o usar como plantillas.
-          </p>
-          <ul class="muted tiny">
-            <li>Ver detalles de cada ebook</li>
-            <li>Volver a abrir en el generador</li>
-            <li>Descargar de nuevo en PDF</li>
-          </ul>
         </div>
       </div>
     </section>
 
-    <!-- GENERADOR PRINCIPAL -->
+    <!-- GENERADOR -->
     <main id="appMain" class="app-main" style="display:none;">
       <section class="sidebar card">
         <div class="sidebar-header">
@@ -104,70 +82,45 @@
         </div>
 
         <div class="form-control">
-          <label for="ebookTitle">Título del ebook</label>
-          <input
-            type="text"
-            id="ebookTitle"
-            placeholder="Ej: Cenas fáciles para la semana"
-          />
+          <label>Título del ebook</label>
+          <input id="ebookTitle" type="text" placeholder="Ej: Hábitos poderosos para 2025" />
         </div>
 
         <div class="form-control">
-          <label for="ebookTopic">Marca o autor</label>
-<input
-  type="text"
-  id="ebookTopic"
-  placeholder="Ej:Tu Marca, Nombre del experto..."
-/>
-
+          <label>Marca o autor</label>
+          <input id="ebookTopic" type="text" placeholder="Ej: YC Ramos, Tu Marca..." />
         </div>
 
         <div class="form-control">
-          <label for="ebookAudience">Público objetivo</label>
-          <input
-            type="text"
-            id="ebookAudience"
-            placeholder="Ej: Madres ocupadas, emprendedores, estudiantes..."
-          />
+          <label>Público objetivo</label>
+          <input id="ebookAudience" type="text" placeholder="Ej: Emprendedores, madres ocupadas..." />
         </div>
 
         <div class="form-grid">
           <div class="form-control">
-            <label for="chaptersCount">Número de capítulos</label>
-            <input
-              type="number"
-              id="chaptersCount"
-              min="1"
-              max="30"
-              value="8"
-            />
+            <label>Capítulos</label>
+            <input id="chaptersCount" type="number" min="1" max="20" value="8" />
           </div>
 
           <div class="form-control">
-            <label for="pagesCount">Páginas aproximadas</label>
-            <input
-              type="number"
-              id="pagesCount"
-              min="5"
-              max="200"
-              value="40"
-            />
+            <label>Páginas aproximadas</label>
+            <input id="pagesCount" type="number" min="5" max="200" value="40" />
           </div>
         </div>
 
         <div class="form-control">
-          <label for="toneSelect">Tono del ebook</label>
+          <label>Tono</label>
           <select id="toneSelect">
-            <option value="neutral">Neutral y claro</option>
+            <option value="neutral">Neutral</option>
             <option value="profesional">Profesional</option>
-            <option value="cercano">Cercano y conversacional</option>
+            <option value="cercano">Cercano</option>
             <option value="divertido">Divertido</option>
-            <option value="inspirador">Inspirador / motivador</option>
+            <option value="inspirador">Inspirador</option>
           </select>
         </div>
 
         <div class="form-control">
-          <label for="languageSelect">Idioma</label>
+          <label>Idioma</label>
           <select id="languageSelect">
             <option value="es">Español</option>
             <option value="en">Inglés</option>
@@ -175,67 +128,51 @@
         </div>
 
         <div class="form-control">
-          <label for="templateSelect">Plantilla visual</label>
+          <label>Plantilla visual</label>
           <select id="templateSelect">
             <option value="clasic">Clásica dorada</option>
             <option value="minimal">Minimal blanca</option>
             <option value="dark">Oscura elegante</option>
             <option value="colorful">Creativa por nicho</option>
           </select>
-          <p class="muted tiny">
-            Cada plantilla cambia colores, estilos de títulos y sensación visual del ebook.
-          </p>
         </div>
 
         <div class="form-control">
-          <label for="extraInstructions">Notas para la IA</label>
-          <textarea
-            id="extraInstructions"
-            rows="4"
-            placeholder="Ej: Incluir ejemplos reales, agregar checklist al final, estructurar cada capítulo con introducción, desarrollo y resumen..."
-          ></textarea>
+          <label>Notas para la IA</label>
+          <textarea id="extraInstructions" rows="4"></textarea>
         </div>
 
         <div class="sidebar-actions">
-  <button id="generateEbookBtn" class="btn" type="button">
-    Generar ebook con IA
-  </button>
-  <button id="newEbookBtn" class="btn" type="button">
-    Nuevo ebook
-  </button>
-</div>
-
+          <button id="generateEbookBtn" class="btn">Generar ebook con IA</button>
+          <button id="newEbookBtn" class="btn">Nuevo ebook</button>
+        </div>
 
         <p id="generationStatus" class="muted tiny"></p>
       </section>
 
       <section class="editor-area">
         <div class="editor-toolbar">
-  <div>
-    <h2>Editor del ebook</h2>
-  </div>
-  <div class="editor-actions">
-    <button id="exportPdfBtn" class="btn success" type="button">
-      📄 Descargar PDF
-    </button>
-  </div>
-</div>
+          <h2>Editor del ebook</h2>
 
-          <div id="ebookContainer" class="ebook-container">
-          <div id="ebookEditor" class="ebook-editor template-clasic" contenteditable="true">
-            
+          <div class="editor-actions">
+            <button id="exportPdfBtn" class="btn">📄 Descargar PDF</button>
           </div>
         </div>
+
+        <div class="ebook-container">
+          <div id="ebookEditor"
+               class="ebook-editor template-clasic"
+               contenteditable="true"></div>
+        </div>
+
       </section>
     </main>
-
   </div>
 
   <script src="pdf.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
-
 
 
 
