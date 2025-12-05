@@ -1,210 +1,320 @@
-// api/generate-content.js
+// /api/generate-content.js
+// Endpoint para generar ebooks premium con texto + imágenes en HTML
+// Pensado para Vercel (Node + ESM)
+// Requiere: npm install openai
+
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Método no permitido" });
   }
 
-  const {
-    tema,
-    publico,
-    objetivo,
-    tipo,
-    profundidad,
-    capitulos,
-    autor,
-    plantilla,
-    plan // ya no lo usamos para calidad, solo se pasa desde el front por si lo necesitas luego
-  } = req.body || {};
-
-  if (!tema || !publico || !objetivo || !capitulos) {
-    return res.status(400).json({ error: "Faltan datos obligatorios" });
-  }
-
-  const autorFinal =
-    autor && autor.trim().length > 0 ? autor.trim() : "Autor Anónimo";
-
-  const detalleMap = {
-    basico:
-      "extensión clara y directa, similar a unas 10-15 páginas en PDF, sin paja, pero con ejemplos y ejercicios útiles",
-    medio:
-      "extensión media, similar a unas 20-30 páginas en PDF, con explicaciones, ejemplos, casos breves y ejercicios prácticos",
-    alto:
-      "extensión alta, similar a unas 30-50 páginas en PDF, con marcos conceptuales, ejemplos desarrollados, mini casos de estudio y varios ejercicios por capítulo. El contenido debe ser extenso y profundo, pero siempre práctico"
-  };
-
-  const tipoMap = {
-    guia: "una guía paso a paso muy práctica y accionable",
-    plan: "un plan estructurado por días o semanas con acciones concretas",
-    checklist: "una checklist accionable con explicaciones breves y claras",
-    mixto:
-      "una combinación de guía paso a paso, plan accionable y checklist final"
-  };
-
-  const plantillaMap = {
-    minimal:
-      "Minimal Pro (limpia, profesional, muy legible, estilo editorial moderno)",
-    business:
-      "Business Blue (corporativa, seria, ideal para negocios y profesionales)",
-    creative:
-      "Creativa Full Color (llamativa y colorida, ideal para creatividad, marketing y redes sociales)"
-  };
-
-  const detalleTexto = detalleMap[profundidad] || detalleMap.medio;
-  const tipoTexto = tipoMap[tipo] || tipoMap.guia;
-  const plantillaTexto = plantillaMap[plantilla] || plantillaMap.minimal;
-
-  // Misma calidad para todos los planes (como acordamos)
-  const model = "gpt-4o";
-
-    const prompt = `
-Quiero que actúes como un autor experto que escribe ebooks prácticos en español, con mucho valor real y sin paja.
-
-Datos del ebook:
-- Tema principal: ${tema}
-- Público objetivo: ${publico}
-- Objetivo del ebook: ${objetivo}
-- Tipo de ebook: ${tipoTexto}
-- Nivel de detalle: ${detalleTexto}
-- Número EXACTO de capítulos principales que debes crear: ${capitulos}
-- Autor o marca: ${autorFinal}
-- Estilo visual (plantilla): ${plantillaTexto}
-
-Instrucciones de estilo:
-- Sé muy práctico: incluye pasos concretos, ejemplos aplicados al público objetivo y mini ejercicios.
-- Evita frases genéricas, relleno y repeticiones innecesarias.
-- No inventes estadísticas ni porcentajes falsos.
-- Usa un tono cercano pero profesional.
-- No hables de que eres una IA ni menciones modelos de lenguaje.
-- El contenido debe ser relativamente extenso y detallado; no resumas demasiado.
-- Escribe de forma fluida en español neutro.
-
-Puedes usar estos bloques visuales cuando tenga sentido:
-- Para una idea muy importante, usa:
-  <div class="highlight-box"><strong>Título breve del bloque:</strong> Explicación práctica.</div>
-- Para consejos específicos, usa:
-  <div class="tip-box"><strong>Tip:</strong> Consejo práctico que el lector pueda aplicar.</div>
-- Para actividades y ejercicios, usa:
-  <div class="exercise-box"><strong>Ejercicio:</strong> Explica qué debe hacer el lector paso a paso.</div>
-
-Estructura obligatoria del ebook (EN HTML SENCILLO, SIN <html> NI <body>):
-
-1) Portada:
-<h1>Título potente del ebook</h1>
-<p class="subtitle">Subtítulo claro, orientado al beneficio principal</p>
-<p class="author">Por ${autorFinal}</p>
-
-2) Introducción:
-<h2>Introducción</h2>
-<p>Explica el problema, por qué importa para este público y qué conseguirá el lector al aplicar el contenido.</p>
-
-3) Índice:
-<h2>Índice</h2>
-<ul>
-  <!-- Debes generar exactamente ${capitulos} elementos de índice -->
-  <li>Capítulo 1: título del capítulo 1</li>
-  <li>Capítulo 2: título del capítulo 2</li>
-  ...
-  <li>Capítulo ${capitulos}: título del capítulo ${capitulos}</li>
-</ul>
-
-4) Capítulos:
-Debes generar EXACTAMENTE ${capitulos} capítulos. Para cada capítulo respeta este esquema y desarrolla de forma detallada:
-
-<h2>Capítulo X - Título del capítulo</h2>
-<p>Texto introductorio que conecta con la realidad del lector.</p>
-
-<h3>Conceptos clave</h3>
-<ul>
-  <li>Concepto + explicación práctica orientada al público objetivo.</li>
-  <li>Otro concepto importante con ejemplo breve.</li>
-</ul>
-
-<h3>Pasos accionables</h3>
-<ol>
-  <li>Paso concreto que el lector pueda aplicar.</li>
-  <li>Otro paso concreto que se pueda hacer en poco tiempo.</li>
-</ol>
-
-<h3>Ejemplo aplicado</h3>
-<p>Ejemplo sencillo y realista aplicando el contenido del capítulo al público objetivo.</p>
-
-<h3>Mini ejercicio</h3>
-<ul>
-  <li>Ejercicio o pregunta que el lector pueda hacer hoy mismo para avanzar.</li>
-</ul>
-
-Cuando tenga sentido, añade uno o varios bloques usando las clases highlight-box, tip-box o exercise-box para destacar ideas clave, tips o ejercicios adicionales.
-
-5) Conclusión:
-<h2>Conclusión</h2>
-<p>Resumen de ideas clave, recordatorio del objetivo y mensaje final motivador.</p>
-
-6) Bonus:
-<h2>Bonus: Checklist o plan accionable</h2>
-<ul>
-  <li>Punto accionable concreto, breve y claro.</li>
-  <li>Otro punto accionable que el lector pueda aplicar de inmediato.</li>
-</ul>
-
-REGLAS IMPORTANTES:
-- Devuelve SOLO el contenido interno como si ya estuviera dentro de <div class="ebook-page">...</div>, pero NO añadas esa etiqueta, yo la envolveré después.
-- Usa solo etiquetas HTML básicas: h1, h2, h3, p, ul, ol, li, strong, em, y los div con clases highlight-box, tip-box, exercise-box.
-- No incluyas CSS, ni scripts, ni estilos en línea.
-- DEBES generar exactamente ${capitulos} capítulos (Capítulo 1, Capítulo 2, ..., Capítulo ${capitulos}). No menos.
-- No combines varios capítulos en uno solo.
-- Asegúrate de que el contenido sea útil, coherente, práctico y con suficiente extensión.
-`;
-
-
   try {
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      return res
-        .status(500)
-        .json({ error: "No está configurada la API KEY de OpenAI" });
+    const {
+      title,
+      topic,          // en tu UI ahora será Marca / Autor
+      audience,
+      chaptersCount,
+      pagesCount,
+      tone,
+      language,
+      extra,
+      template,
+      plan,
+    } = req.body || {};
+
+    if (!title) {
+      return res.status(400).json({ error: "Falta el título del ebook." });
     }
 
-    const openaiRes = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model,
-        messages: [
-          {
-            role: "system",
-            content:
-              "Eres un autor experto que escribe ebooks altamente prácticos, accionables y sin paja en español. Tu prioridad es ayudar al lector a resolver un problema real."
-          },
-          { role: "user", content: prompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 12000
+    const safeTitle = String(title).trim();
+    const safeTopic = (topic || "").trim();
+    const safeAudience = (audience || "").trim();
 
-      })
+    const chapters = clampInt(chaptersCount, 1, 20);
+    const pages = clampInt(pagesCount, 5, 120);
+
+    const toneLabel = mapTone(tone);
+    const langCode = language === "en" ? "en" : "es";
+
+    // Tokens aproximados para no gastar de más
+    // ~120 tokens por página como referencia
+    const maxOutputTokens = Math.min(pages * 120, 12000);
+
+    const systemInstructions = buildSystemInstructions(
+      chapters,
+      toneLabel,
+      langCode,
+      template
+    );
+
+    const userConfigText = buildUserConfigSummary({
+      title: safeTitle,
+      topic: safeTopic,
+      audience: safeAudience,
+      chapters,
+      pages,
+      toneLabel,
+      langCode,
+      extra,
+      template,
+      plan,
     });
 
-    if (!openaiRes.ok) {
-      const errorText = await openaiRes.text();
-      console.error("Error al llamar a OpenAI:", errorText);
-      return res
-        .status(500)
-        .json({ error: "Error al llamar a la API de OpenAI" });
+    // 1) GENERAR TEXTO HTML CON PLACEHOLDERS DE IMAGEN
+    const textResponse = await client.responses.create({
+      model: "gpt-4.1-mini",
+      instructions: systemInstructions,
+      input: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: userConfigText,
+            },
+          ],
+        },
+      ],
+      max_output_tokens: maxOutputTokens,
+      temperature: 0.85,
+    });
+
+    let html = textResponse.output_text;
+
+    // 2) DETECTAR PLACEHOLDERS DE IMAGEN EN EL HTML
+    // Formato esperado: <!--IMAGE_CH1_SLOT1-->
+    const placeholders = collectImagePlaceholders(html, chapters);
+
+    // Si por alguna razón el modelo no puso los marcadores,
+    // seguimos devolviendo al menos el HTML de texto.
+    if (placeholders.length === 0) {
+      return res.status(200).json({ html });
     }
 
-    const json = await openaiRes.json();
-    const content = json.choices?.[0]?.message?.content || "";
+    // 3) GENERAR IMÁGENES CON gpt-image-1 (Base64) POR CAPÍTULO
+    for (let ch = 1; ch <= chapters; ch++) {
+      const chapterMarkers = placeholders.filter((p) => p.chapter === ch);
+      if (chapterMarkers.length === 0) continue;
 
-    // IMPORTANTE: ya no envolvemos en <div class="ebook-page">
-    const html = content.trim();
+      const imagePromptBase = buildImagePrompt({
+        title: safeTitle,
+        topic: safeTopic,
+        audience: safeAudience,
+        chapterNumber: ch,
+        langCode,
+      });
+
+      // 2 imágenes por capítulo
+      const imgResponse = await client.images.generate({
+        model: "gpt-image-1",
+        prompt: imagePromptBase,
+        n: 2,
+        size: "1024x1024",
+        // gpt-image-1 ya devuelve base64 por defecto
+      });
+
+      const imagesB64 = (imgResponse.data || []).map((d) => d.b64_json);
+
+      // Reemplazar marcadores por <figure><img ... /></figure>
+      chapterMarkers.forEach((marker, idx) => {
+        const b64 = imagesB64[idx] || imagesB64[0];
+        if (!b64) return;
+
+        const figHtml = buildFigureHtml({
+          base64: b64,
+          chapterNumber: ch,
+          slot: marker.slot,
+          langCode,
+        });
+
+        html = html.replace(marker.marker, figHtml);
+      });
+    }
 
     return res.status(200).json({ html });
-  } catch (err) {
-    console.error("Error interno del servidor:", err);
-    return res.status(500).json({ error: "Error interno del servidor" });
+  } catch (error) {
+    console.error("Error en /api/generate-content:", error);
+    return res.status(500).json({
+      error: "Error generando el ebook. Revisa la consola del servidor.",
+    });
   }
+}
+
+// -------------------- Helpers --------------------
+
+function clampInt(value, min, max) {
+  const n = parseInt(value, 10);
+  if (Number.isNaN(n)) return min;
+  return Math.min(Math.max(n, min), max);
+}
+
+function mapTone(tone) {
+  switch (tone) {
+    case "profesional":
+      return "profesional, estructurado y serio";
+    case "cercano":
+      return "cercano, conversacional y sencillo";
+    case "divertido":
+      return "dinámico, entretenido y con toques de humor suave";
+    case "inspirador":
+      return "inspirador, motivador y lleno de energía positiva";
+    default:
+      return "neutral, claro y fácil de entender";
+  }
+}
+
+function buildSystemInstructions(chapters, toneLabel, langCode, template) {
+  const langName = langCode === "en" ? "inglés" : "español";
+
+  const templateHint =
+    template === "dark"
+      ? "Estilo visual pensado para fondo oscuro: usa títulos claros y secciones bien separadas."
+      : template === "minimal"
+      ? "Estilo visual minimalista, como un libro editorial limpio y moderno."
+      : template === "colorful"
+      ? "Estilo visual creativo a color, como materiales de marketing modernos."
+      : "Estilo visual clásico dorado, elegante, como un libro premium.";
+
+  return `
+Eres un ghostwriter experto en ebooks para info-productores y creadores de contenido.
+Tu misión es escribir un ebook COMPLETO, de ALTA CALIDAD, con capítulos desarrollados y lenguaje natural,
+preparado para ser vendido como producto digital.
+
+Escribe SIEMPRE en ${langName}, con un tono ${toneLabel}.
+No expliques lo que estás haciendo, solo devuelve el CONTENIDO del ebook en HTML.
+
+Requisitos IMPORTANTES:
+
+1) OUTPUT
+   - Devuelve SOLO HTML válido, sin <html>, <head>, <body> ni estilos embebidos.
+   - Usa esta estructura:
+     - <h1> para el título principal.
+     - Una sección de introducción con <h2>Introducción</h2> y varios párrafos.
+     - Para cada capítulo, usa <h2>Capítulo X: ...</h2>, seguido de varios párrafos, listas, ejemplos, etc.
+     - Usa <ul><li>...</li></ul> donde tenga sentido.
+     - Termina con una sección <h2>Conclusión</h2> bien desarrollada.
+   - No incluyas textos de ejemplo tipo "Aquí va el contenido...", escribe contenido real.
+
+2) LARGO
+   - Cada capítulo debe estar bien desarrollado: al menos varios párrafos (puedes asumir 400-600 palabras por capítulo).
+   - La introducción y la conclusión también deben aportar valor real.
+
+3) PLACEHOLDERS DE IMÁGENES
+   - Después del título de cada capítulo (solo los capítulos, no la introducción ni la conclusión),
+     inserta exactamente DOS comentarios HTML como marcadores de imagen:
+       <!--IMAGE_CH1_SLOT1-->
+       <!--IMAGE_CH1_SLOT2-->
+       <!--IMAGE_CH2_SLOT1-->
+       <!--IMAGE_CH2_SLOT2-->
+       ...
+     para cada capítulo del 1 al ${chapters}.
+   - No pongas texto visible explicando esos marcadores, solo los comentarios.
+   - Escribe el resto del contenido normalmente debajo de esos comentarios.
+
+4) ESTILO
+   - El contenido debe sentirse como un ebook profesional: ejemplos, pasos, consejos accionables,
+     historias breves y resúmenes al final de capítulos.
+   - Evita repetir literalmente la misma frase en cada capítulo.
+   - Piensa en un lector que ha pagado por un producto premium.
+
+5) DISEÑO / PLANTILLA
+   - Ten en mente este enfoque visual: ${templateHint}
+   - Puedes usar subtítulos con <h3> cuando tenga sentido.
+
+De nuevo: devuelve solo el HTML del ebook, respetando los marcadores <!--IMAGE_CHX_SLOTY--> para las imágenes.
+`;
+}
+
+function buildUserConfigSummary({
+  title,
+  topic,
+  audience,
+  chapters,
+  pages,
+  toneLabel,
+  langCode,
+  extra,
+  template,
+  plan,
+}) {
+  const langName = langCode === "en" ? "Inglés" : "Español";
+
+  return `
+DATOS DEL EBOOK A GENERAR
+
+Título: ${title}
+Marca o Autor: ${topic || "No especificado"}
+Público objetivo: ${audience || "No especificado"}
+Número de capítulos: ${chapters}
+Páginas aproximadas: ${pages}
+Tono deseado: ${toneLabel}
+Idioma: ${langName}
+Plantilla visual seleccionada: ${template || "clasic"}
+Plan del usuario: ${plan || "basico"}
+
+Notas adicionales del creador:
+${extra || "(sin notas adicionales)"}
+
+Usa toda esta información para decidir qué capítulos, subtemas, ejemplos y consejos incluir.
+Responde ahora con el HTML completo del ebook, siguiendo las instrucciones del sistema.
+`;
+}
+
+function collectImagePlaceholders(html, chapters) {
+  const placeholders = [];
+
+  for (let ch = 1; ch <= chapters; ch++) {
+    for (let slot = 1; slot <= 2; slot++) {
+      const marker = `<!--IMAGE_CH${ch}_SLOT${slot}-->`;
+      if (html.includes(marker)) {
+        placeholders.push({ chapter: ch, slot, marker });
+      }
+    }
+  }
+
+  return placeholders;
+}
+
+function buildImagePrompt({ title, topic, audience, chapterNumber, langCode }) {
+  const langPrefix =
+    langCode === "en"
+      ? "Illustration for an ebook in English."
+      : "Ilustración para un ebook en español.";
+
+  const base = `
+${langPrefix}
+Ebook title: "${title}".
+Brand / author: ${topic || "no especificado"}.
+Target audience: ${audience || "lectores interesados en el tema"}.
+This should be a clean, modern illustration for chapter ${chapterNumber},
+with simple visual metaphors, soft gradients, subtle golden accents and a style similar
+to modern presentation tools like Gamma or Canva.
+
+Include a composition that could work dentro de un libro digital: sin texto grande dentro de la imagen,
+sin logos de marcas, sin marcas registradas. 
+Iconos, objetos, personajes o escenas simples que ayuden a visualizar el contenido del capítulo.
+`;
+
+  return base.trim();
+}
+
+function buildFigureHtml({ base64, chapterNumber, slot, langCode }) {
+  const alt =
+    langCode === "en"
+      ? `Illustration for chapter ${chapterNumber} of the ebook.`
+      : `Ilustración para el capítulo ${chapterNumber} del ebook.`;
+
+  return `
+<figure class="ebook-figure">
+  <img src="data:image/png;base64,${base64}" alt="${alt}" />
+</figure>
+`.trim();
 }
 
