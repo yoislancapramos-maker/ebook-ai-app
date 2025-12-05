@@ -297,7 +297,7 @@ themeToggleBtn.addEventListener("click", () => {
     extraInstructionsInput.value = "";
     templateSelect.value = "clasic";
     applyTemplate("clasic");
-    currentTemplateLabel.textContent = "";
+    
 
     generationStatus.textContent = "";
    ebookEditor.innerHTML = "";
