@@ -418,5 +418,26 @@ body {
   }
 }
 
+body.theme-light {
+  background: radial-gradient(circle at top, #f9fafb 0, #e5e7eb 55%);
+  color: #111827;
+}
+
+body.theme-light .card {
+  background: #ffffff;
+  color: #111827;
+}
+
+body.theme-light .app-header {
+  background: linear-gradient(135deg, #ffffff, #f3f4f6);
+  color: #111827;
+}
+
+body.theme-light .ebook-editor {
+  background: #ffffff;
+  color: #111827;
+}
+
+
 
 
