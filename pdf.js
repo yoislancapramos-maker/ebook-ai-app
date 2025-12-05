@@ -1,25 +1,19 @@
 // pdf.js
-// Exportador de PDF para Golden Ebook Studio
-// Requiere: jsPDF 2.5+ y html2canvas 1.4+
+// Módulo de exportación a PDF de Golden Ebook Studio
+// Requiere jsPDF 2.5+ y html2canvas 1.4+
 
 window.pdfExporter = (function () {
   const { jsPDF } = window.jspdf;
 
-  /**
-   * Exporta un elemento DOM a PDF multi-página.
-   * - Paginado automático en función de la altura del contenido.
-   * - Última página sin espacio blanco excesivo.
-   */
   async function exportElementToPdf(element, options = {}) {
     const filename = options.filename || "ebook.pdf";
 
     if (!element) {
-      console.error("No se encontró el elemento del ebook para exportar.");
       alert("No se encontró el contenido del ebook para exportar.");
       return;
     }
 
-    // Clonamos el contenido para que html2canvas capture TODO sin scroll.
+    // Clon “oculto” para capturar todo el contenido
     const cloneContainer = document.createElement("div");
     cloneContainer.style.position = "fixed";
     cloneContainer.style.left = "-99999px";
@@ -41,7 +35,7 @@ window.pdfExporter = (function () {
 
     try {
       const canvas = await html2canvas(cloneContainer, {
-        scale: 2, // mejor calidad pero PDF razonable
+        scale: 2,
         useCORS: true,
         backgroundColor: "#ffffff",
         scrollX: 0,
@@ -57,7 +51,6 @@ window.pdfExporter = (function () {
       const imgWidthPx = canvas.width;
       const imgHeightPx = canvas.height;
 
-      // Relación entre px del canvas y mm del PDF
       const ratio = pdfWidth / imgWidthPx;
       const pageHeightPx = pdfHeight / ratio;
 
@@ -65,30 +58,28 @@ window.pdfExporter = (function () {
       let page = 0;
 
       while (renderedHeight < imgHeightPx) {
-        const remainingHeightPx = imgHeightPx - renderedHeight;
-        const sliceHeightPx = Math.min(pageHeightPx, remainingHeightPx);
+        const remainingHeight = imgHeightPx - renderedHeight;
+        const sliceHeight = Math.min(pageHeightPx, remainingHeight);
 
-        // Canvas temporal para cada página
         const pageCanvas = document.createElement("canvas");
         pageCanvas.width = imgWidthPx;
-        pageCanvas.height = sliceHeightPx;
+        pageCanvas.height = sliceHeight;
 
         const ctx = pageCanvas.getContext("2d");
-
         ctx.drawImage(
           canvas,
           0,
           renderedHeight,
           imgWidthPx,
-          sliceHeightPx,
+          sliceHeight,
           0,
           0,
           imgWidthPx,
-          sliceHeightPx
+          sliceHeight
         );
 
         const imgData = pageCanvas.toDataURL("image/jpeg", 0.9);
-        const sliceHeightMm = sliceHeightPx * ratio;
+        const sliceHeightMm = sliceHeight * ratio;
 
         if (page > 0) {
           pdf.addPage();
@@ -96,16 +87,14 @@ window.pdfExporter = (function () {
 
         pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, sliceHeightMm);
 
-        renderedHeight += sliceHeightPx;
+        renderedHeight += sliceHeight;
         page++;
       }
 
       pdf.save(filename);
-    } catch (err) {
-      console.error("Error al generar el PDF:", err);
-      alert(
-        "Ocurrió un problema al generar el PDF. Revisa la consola para más detalles."
-      );
+    } catch (error) {
+      console.error("Error al generar el PDF:", error);
+      alert("Ocurrió un problema al generar el PDF. Revisa la consola para más detalles.");
     } finally {
       document.body.removeChild(cloneContainer);
     }
@@ -115,4 +104,5 @@ window.pdfExporter = (function () {
     exportElementToPdf
   };
 })();
+
 
