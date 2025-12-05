@@ -2,6 +2,14 @@
 // Lógica principal de Golden Ebook Studio
 
 document.addEventListener("DOMContentLoaded", () => {
+
+  // ----- MODO OSCURO / CLARO -----
+const themeToggleBtn = document.getElementById("themeToggleBtn");
+
+themeToggleBtn.addEventListener("click", () => {
+  document.body.classList.toggle("theme-light");
+});
+
   // DASHBOARD / ACCESO
   const accessPanel = document.getElementById("accessPanel");
   const appMain = document.getElementById("appMain");
@@ -32,8 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const ebookEditor = document.getElementById("ebookEditor");
   const exportPdfBtn = document.getElementById("exportPdfBtn");
-  const currentTemplateLabel = document.getElementById("currentTemplateLabel");
-
+  
   // Claves de ejemplo
   const VALID_KEYS = {
     basico: "BASICO-2025",
@@ -109,7 +116,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     ebookEditor.classList.add(cssClass);
-    currentTemplateLabel.textContent = labelText;
   }
 
   templateSelect.addEventListener("change", () => {
