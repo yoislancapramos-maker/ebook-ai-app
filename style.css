@@ -436,6 +436,20 @@ body.theme-light .ebook-editor {
   color: #111827;
 }
 
+/* BOTONES UNIVERSALES DORADOS */
+.btn {
+  background: linear-gradient(135deg, #ffe9a3, #f5c654, #f5a623);
+  color: #1f2933 !important;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 12px 30px rgba(245, 198, 84, 0.65);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 40px rgba(245, 198, 84, 0.9);
+}
+
+
 
 
 
